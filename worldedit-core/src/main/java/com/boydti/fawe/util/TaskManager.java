@@ -6,6 +6,7 @@ import com.boydti.fawe.config.Settings;
 import com.boydti.fawe.object.RunnableVal;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
@@ -13,7 +14,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

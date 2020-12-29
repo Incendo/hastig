@@ -48,10 +48,10 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.weather.WeatherType;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Represents a world (dimension).

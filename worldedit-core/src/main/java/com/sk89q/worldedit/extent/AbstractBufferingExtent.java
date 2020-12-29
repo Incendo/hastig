@@ -27,8 +27,8 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-import java.util.Optional;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Base extent class for buffering changes between {@link #setBlock(BlockVector3, BlockStateHolder)}

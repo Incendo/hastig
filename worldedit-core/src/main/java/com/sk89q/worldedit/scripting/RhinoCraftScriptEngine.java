@@ -28,8 +28,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
-import java.util.Map;
 import javax.script.ScriptException;
+import java.util.Map;
 
 public class RhinoCraftScriptEngine implements CraftScriptEngine {
     private int timeLimit;

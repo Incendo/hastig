@@ -28,7 +28,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.MultiDirection;
-import com.sk89q.worldedit.internal.annotation.OptionalArg;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
@@ -39,8 +38,8 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
-import java.util.List;
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 

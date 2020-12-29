@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -29,7 +30,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 /**
  * Combines several masks and requires that one or more masks return true

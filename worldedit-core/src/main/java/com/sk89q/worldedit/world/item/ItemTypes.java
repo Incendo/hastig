@@ -23,10 +23,10 @@ import com.boydti.fawe.object.string.JoinedCharSequence;
 import com.sk89q.worldedit.world.block.ItemTypesCache;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 /**
  * Stores a list of common {@link ItemType ItemTypes}.

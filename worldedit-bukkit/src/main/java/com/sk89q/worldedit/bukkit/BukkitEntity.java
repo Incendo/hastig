@@ -30,9 +30,9 @@ import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import org.bukkit.entity.EntityType;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

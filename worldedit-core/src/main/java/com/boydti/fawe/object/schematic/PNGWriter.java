@@ -9,13 +9,13 @@ import com.sk89q.worldedit.math.MutableBlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 
 public class PNGWriter implements ClipboardWriter {
 

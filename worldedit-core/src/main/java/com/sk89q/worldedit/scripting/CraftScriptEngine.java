@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.scripting;
 
-import java.util.Map;
 import javax.script.ScriptException;
+import java.util.Map;
 
 public interface CraftScriptEngine {
     void setTimeLimit(int milliseconds);

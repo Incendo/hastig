@@ -20,11 +20,11 @@ import org.inventivetalent.mapmanager.controller.MultiMapController;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 
+import javax.annotation.Nullable;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
-import javax.annotation.Nullable;
 
 public class BukkitImageViewer implements ImageViewer {
     private final MapManager mapManager;

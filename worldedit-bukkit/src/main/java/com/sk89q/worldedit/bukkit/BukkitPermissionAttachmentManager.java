@@ -1,10 +1,11 @@
 package com.sk89q.worldedit.bukkit;
 
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
 
 public class BukkitPermissionAttachmentManager {
 

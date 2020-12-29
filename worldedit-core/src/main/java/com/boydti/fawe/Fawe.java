@@ -17,6 +17,9 @@ import com.sk89q.worldedit.WorldEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.NotificationEmitter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,9 +33,6 @@ import java.lang.management.MemoryUsage;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.NotificationEmitter;
 
 /**
  * [ WorldEdit action]

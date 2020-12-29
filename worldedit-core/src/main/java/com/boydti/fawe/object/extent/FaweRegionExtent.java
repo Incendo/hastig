@@ -19,8 +19,8 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.Collection;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 public abstract class FaweRegionExtent extends ResettableExtent implements IBatchProcessor {
 

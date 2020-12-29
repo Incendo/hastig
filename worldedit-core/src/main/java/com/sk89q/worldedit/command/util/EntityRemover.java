@@ -23,8 +23,8 @@ import com.boydti.fawe.util.TaskManager;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.function.EntityFunction;
 
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
