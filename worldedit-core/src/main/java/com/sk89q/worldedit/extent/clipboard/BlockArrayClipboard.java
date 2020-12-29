@@ -39,11 +39,11 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -53,6 +53,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockArrayClipboard implements Clipboard {
 
+    private final BlockArrayClipboardFAWEOutputExtent blockArrayClipboardFAWEOutputExtent =
+            new BlockArrayClipboardFAWEOutputExtent();
     private final Region region;
     private final BlockVector3 origin;
     private final Clipboard parent;
@@ -86,6 +88,12 @@ public class BlockArrayClipboard implements Clipboard {
         this.parent = parent;
         this.region = region.clone();
         this.origin = region.getMinimumPoint();
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this.blockArrayClipboardFAWEOutputExtent;
     }
 
     @Override
@@ -147,16 +155,8 @@ public class BlockArrayClipboard implements Clipboard {
         return false;
     }
 
-    @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tag) {
-        x -= origin.getX();
-        y -= origin.getY();
-        z -= origin.getZ();
-        return getParent().setTile(x, y, z, tag);
-    }
-
     public boolean setTile(BlockVector3 position, CompoundTag tag) {
-        return setTile(position.getX(), position.getY(), position.getZ(), tag);
+        return this.faweOutput().setTile(position.getX(), position.getY(), position.getZ(), tag);
     }
 
     @Override
@@ -384,4 +384,17 @@ public class BlockArrayClipboard implements Clipboard {
             return result != null;
         }
     }
+
+    public class BlockArrayClipboardFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tag) {
+            x -= origin.getX();
+            y -= origin.getY();
+            z -= origin.getZ();
+            return getParent().faweOutput().setTile(x, y, z, tag);
+        }
+
+    }
+
 }

@@ -19,12 +19,16 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 public class PassthroughExtent extends AbstractDelegateExtent {
+
+    private final PassthroughExtentFAWEOutputExtent passthroughExtentFAWEOutputExtent =
+            new PassthroughExtentFAWEOutputExtent();
 
     /**
      * Create a new instance.
@@ -33,6 +37,11 @@ public class PassthroughExtent extends AbstractDelegateExtent {
      */
     public PassthroughExtent(Extent extent) {
         super(extent);
+    }
+
+    @Override
+    public @NotNull FAWEOutputExtent faweOutput() {
+        return this.passthroughExtentFAWEOutputExtent;
     }
 
     @Override
@@ -192,11 +201,6 @@ public class PassthroughExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        return getExtent().setTile(x, y, z, tile);
-    }
-
-    @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         return getExtent().setBiome(position, biome);
     }
@@ -241,4 +245,14 @@ public class PassthroughExtent extends AbstractDelegateExtent {
     public <T extends Filter> T apply(Iterable<BlockVector3> positions, T filter) {
         return getExtent().apply(positions, filter);
     }
+
+    public class PassthroughExtentFAWEOutputExtent extends AbstractDelegateExtentFAWEOutputExtent {
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            return getExtent().faweOutput().setTile(x, y, z, tile);
+        }
+
+    }
+
 }

@@ -8,6 +8,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -61,10 +62,15 @@ public abstract class FilterBlock extends BlockVector3 implements Extent, TileEn
         return getExtent().getBlock(x, y, z);
     }
 
-
+    @NotNull
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        return getExtent().setTile(x, y, z, tile);
+    public FAWEOutputExtent faweOutput() {
+        return new FAWEOutputExtent() {
+            @Override
+            public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+                return getExtent().faweOutput().setTile(x, y, z, tile);
+            }
+        };
     }
 
     @Override

@@ -33,12 +33,14 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class RequestExtent implements Extent {
 
+    private final RequestExtentFAWEOutputExtent requestExtentFAWEOutputExtent = new RequestExtentFAWEOutputExtent();
     private Request request;
 
     protected Extent getExtent() {
@@ -47,6 +49,12 @@ public class RequestExtent implements Extent {
         }
         final EditSession editSession = request.getEditSession();
         return editSession == null ? request.getWorld() : editSession;
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this.requestExtentFAWEOutputExtent;
     }
 
     @Override
@@ -107,11 +115,6 @@ public class RequestExtent implements Extent {
     }
 
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        return getExtent().setTile(x, y, z, tile);
-    }
-
-    @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         return getExtent().setBiome(position, biome);
     }
@@ -128,4 +131,14 @@ public class RequestExtent implements Extent {
         request = null;
         return commit;
     }
+
+    public class RequestExtentFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            return getExtent().faweOutput().setTile(x, y, z, tile);
+        }
+
+    }
+
 }

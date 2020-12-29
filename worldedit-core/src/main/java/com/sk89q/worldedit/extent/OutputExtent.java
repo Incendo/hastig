@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.MutableBlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -60,13 +61,6 @@ public interface OutputExtent {
     default <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 position, T block) throws WorldEditException {
         return setBlock(position.getX(), position.getY(), position.getZ(), block);
     }
-
-    // The defaults need to remain for compatibility (the actual implementation still needs to override one of these)
-    default <B extends BlockStateHolder<B>> boolean setBlock(int x, int y, int z, B block) throws WorldEditException {
-        return setBlock(MutableBlockVector3.get(x, y, z), block);
-    }
-
-    boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException;
 
     /**
      * Check if this extent fully supports 3D biomes.
@@ -138,39 +132,72 @@ public interface OutputExtent {
     }
 
     /**
-     * Set the light value.
-     *
-     * @param position position of the block
-     * @param value light level to set
-     */
-    default void setBlockLight(BlockVector3 position, int value) {
-        setBlockLight(position.getX(), position.getY(), position.getZ(), value);
-    }
-
-    default void setBlockLight(int x, int y, int z, int value) {
-    }
-
-    /**
-     * Set the sky light value.
-     *
-     * @param position position of the block
-     * @param value light level to set
-     */
-    default void setSkyLight(BlockVector3 position, int value) {
-        setSkyLight(position.getX(), position.getY(), position.getZ(), value);
-    }
-
-    default void setSkyLight(int x, int y, int z, int value) {
-    }
-
-    default void setHeightMap(HeightMapType type, int[] heightMap) {
-    }
-
-    /**
      * Return an {@link Operation} that should be called to tie up loose ends
      * (such as to commit changes in a buffer).
      *
      * @return an operation or null if there is none to execute
      */
     @Nullable Operation commit();
+
+    // FAWE Start
+    @Nonnull default FAWEOutputExtent faweOutput() {
+        // Always prefer the owning class
+        if (this instanceof FAWEOutputExtent) {
+            return (FAWEOutputExtent) this;
+        }
+        return defaultFAWEOutputExtent;
+    }
+
+    // The defaults need to remain for compatibility (the actual implementation still needs to override one of these)
+    default <B extends BlockStateHolder<B>> boolean setBlock(int x, int y, int z, B block) throws WorldEditException {
+        return setBlock(MutableBlockVector3.get(x, y, z), block);
+    }
+
+    interface FAWEOutputExtent {
+
+        default boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            return false;
+        }
+
+        /**
+         * Set the light value.
+         *
+         * @param position position of the block
+         * @param value light level to set
+         */
+        default void setBlockLight(BlockVector3 position, int value) {
+            setBlockLight(position.getX(), position.getY(), position.getZ(), value);
+        }
+
+        default void setBlockLight(int x, int y, int z, int value) {
+        }
+
+        /**
+         * Set the sky light value.
+         *
+         * @param position position of the block
+         * @param value light level to set
+         */
+        default void setSkyLight(BlockVector3 position, int value) {
+            setSkyLight(position.getX(), position.getY(), position.getZ(), value);
+        }
+
+        default void setSkyLight(int x, int y, int z, int value) {
+        }
+
+        default void setHeightMap(HeightMapType type, int[] heightMap) {
+        }
+
+    }
+
+    class NullFAWEOutputExtent implements FAWEOutputExtent {
+
+        private NullFAWEOutputExtent() {
+        }
+
+    }
+
+    NullFAWEOutputExtent defaultFAWEOutputExtent = new NullFAWEOutputExtent();
+    // FAWE End
+
 }

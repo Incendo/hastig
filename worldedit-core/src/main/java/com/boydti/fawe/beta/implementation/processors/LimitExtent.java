@@ -12,6 +12,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.function.generator.GenBase;
 import com.sk89q.worldedit.function.generator.Resource;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -23,20 +24,13 @@ import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
-import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.block.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import javax.annotation.Nullable;
+import java.util.*;
 
-public class LimitExtent extends AbstractDelegateExtent {
+public class LimitExtent extends AbstractDelegateExtent implements OutputExtent.FAWEOutputExtent {
     private final FaweLimit limit;
 
     /**
@@ -73,6 +67,11 @@ public class LimitExtent extends AbstractDelegateExtent {
             }
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public @NotNull FAWEOutputExtent faweOutput() {
+        return this;
     }
 
     @Override
@@ -607,7 +606,7 @@ public class LimitExtent extends AbstractDelegateExtent {
         limit.THROW_MAX_CHANGES();
         limit.MAX_BLOCKSTATES();
         try {
-            return super.setTile(x, y, z, tile);
+            return super.faweOutput().setTile(x, y, z, tile);
         } catch (FaweException e) {
             if (!limit.MAX_FAILS()) {
                 throw e;

@@ -140,7 +140,7 @@ public class FallbackChunkGet implements IChunkGet {
         if (!tiles.isEmpty()) {
             for (Map.Entry<BlockVector3, CompoundTag> entry : tiles.entrySet()) {
                 BlockVector3 pos = entry.getKey();
-                extent.setTile(bx + pos.getX(), pos.getY(), bz + pos.getZ(), entry.getValue());
+                extent.faweOutput().setTile(bx + pos.getX(), pos.getY(), bz + pos.getZ(), entry.getValue());
             }
 
         }

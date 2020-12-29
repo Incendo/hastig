@@ -32,9 +32,9 @@ import com.sk89q.worldedit.registry.state.PropertyKey;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -235,7 +235,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     public void applyTileEntity(OutputExtent output, int x, int y, int z) {
         CompoundTag nbt = getNbtData();
         if (nbt != null) {
-            output.setTile(x, y, z, nbt);
+            output.faweOutput().setTile(x, y, z, nbt);
         }
     }
 

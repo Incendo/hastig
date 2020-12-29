@@ -61,17 +61,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -100,6 +95,7 @@ public class BukkitWorld extends AbstractWorld {
         HAS_3D_BIOMES = temp;
     }
 
+    private final BukkitWorldFAWEOutputExtent bukkitWorldFAWEOutputExtent = new BukkitWorldFAWEOutputExtent();
     private WeakReference<World> worldRef;
     private final String worldNameRef;
     private final WorldNativeAccess<?, ?, ?> worldNativeAccess;
@@ -118,6 +114,12 @@ public class BukkitWorld extends AbstractWorld {
         } else {
             this.worldNativeAccess = null;
         }
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this.bukkitWorldFAWEOutputExtent;
     }
 
     @Override
@@ -537,11 +539,6 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        return false;
-    }
-
-    @Override
     public boolean setBiome(int x, int y, int z, BiomeType biome) {
         return setBiome(BlockVector3.at(x, y, z), biome);
     }
@@ -561,4 +558,14 @@ public class BukkitWorld extends AbstractWorld {
         org.bukkit.entity.Player bukkitPlayer = BukkitAdapter.adapt(player);
         WorldEditPlugin.getInstance().getBukkitImplAdapter().sendFakeChunk(getWorld(), bukkitPlayer, packet);
     }
+
+    public class BukkitWorldFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            return false;
+        }
+
+    }
+
 }

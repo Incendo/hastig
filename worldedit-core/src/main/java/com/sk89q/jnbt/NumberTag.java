@@ -1,9 +1,7 @@
-package com.sk89q.jnbt.fawe;
-
-import com.sk89q.jnbt.Tag;
+package com.sk89q.jnbt;
 
 /**
- * A numerical {@link Tag}
+ * A numerical {@link Tag}. Added by FAWE
  */
 public abstract class NumberTag extends Tag {
 

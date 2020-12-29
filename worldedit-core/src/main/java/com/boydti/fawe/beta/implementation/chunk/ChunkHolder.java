@@ -13,12 +13,14 @@ import com.boydti.fawe.beta.implementation.processors.EmptyBatchProcessor;
 import com.boydti.fawe.beta.implementation.queue.Pool;
 import com.boydti.fawe.config.Settings;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import javax.annotation.Nullable;
@@ -31,7 +33,7 @@ import java.util.concurrent.Future;
  * An abstract {@link IChunk} class that implements basic get/set blocks.
  */
 @SuppressWarnings("rawtypes")
-public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
+public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputExtent.FAWEOutputExtent {
 
     private static final Pool<ChunkHolder> POOL = FaweCache.IMP.registerPool(ChunkHolder.class, ChunkHolder::new, Settings.IMP.QUEUE.POOL);
 
@@ -67,9 +69,15 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         return delegate;
     }
 
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this;
+    }
+
     @Override
     public boolean setTile(int x, int y, int z, CompoundTag tag) {
-        return delegate.set(this).setTile(x, y, z, tag);
+        return delegate.set(this).faweOutput().setTile(x, y, z, tag);
     }
 
     @Override
@@ -176,12 +184,12 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
 
         @Override
         public void setSkyLight(ChunkHolder chunk, int x, int y, int z, int value) {
-            chunk.chunkSet.setSkyLight(x, y, z, value);
+            chunk.chunkSet.faweOutput().setSkyLight(x, y, z, value);
         }
 
         @Override
         public void setBlockLight(ChunkHolder chunk, int x, int y, int z, int value) {
-            chunk.chunkSet.setBlockLight(x, y, z, value);
+            chunk.chunkSet.faweOutput().setBlockLight(x, y, z, value);
         }
 
         @Override
@@ -205,7 +213,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override public void setHeightMap(ChunkHolder chunk, HeightMapType type, int[] heightMap) {
-            chunk.chunkSet.setHeightMap(type, heightMap);
+            chunk.chunkSet.faweOutput().setHeightMap(type, heightMap);
         }
 
         @Override
@@ -411,12 +419,12 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
 
         @Override
         public void setSkyLight(ChunkHolder chunk, int x, int y, int z, int value) {
-            chunk.chunkSet.setSkyLight(x, y, z, value);
+            chunk.chunkSet.faweOutput().setSkyLight(x, y, z, value);
         }
 
         @Override
         public void setBlockLight(ChunkHolder chunk, int x, int y, int z, int value) {
-            chunk.chunkSet.setBlockLight(x, y, z, value);
+            chunk.chunkSet.faweOutput().setBlockLight(x, y, z, value);
         }
 
         @Override
@@ -440,7 +448,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override public void setHeightMap(ChunkHolder chunk, HeightMapType type, int[] heightMap) {
-            chunk.chunkSet.setHeightMap(type, heightMap);
+            chunk.chunkSet.faweOutput().setHeightMap(type, heightMap);
         }
 
         @Override

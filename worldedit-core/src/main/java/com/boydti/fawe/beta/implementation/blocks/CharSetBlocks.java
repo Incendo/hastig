@@ -8,9 +8,11 @@ import com.boydti.fawe.config.Settings;
 import com.boydti.fawe.object.collection.BlockVector3ChunkMap;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import java.util.Arrays;
@@ -22,7 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-public class CharSetBlocks extends CharBlocks implements IChunkSet {
+public class CharSetBlocks extends CharBlocks implements IChunkSet, OutputExtent.FAWEOutputExtent {
     private static final Pool<CharSetBlocks> POOL = FaweCache.IMP.registerPool(CharSetBlocks.class, CharSetBlocks::new, Settings.IMP.QUEUE.POOL);
 
     public static CharSetBlocks newInstance() {
@@ -58,6 +60,12 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
             return null;
         }
         return biomes[(y >> 2) << 4 | (z >> 2) << 2 | x >> 2];
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this;
     }
 
     @Override

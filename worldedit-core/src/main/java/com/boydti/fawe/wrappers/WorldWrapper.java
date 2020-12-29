@@ -23,11 +23,7 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.*;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.World;
@@ -37,14 +33,16 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.weather.WeatherType;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 public class WorldWrapper extends AbstractWorld {
 
     private final World parent;
+    private final WorldWrapperFAWEOutputExtent worldWrapperFAWEOutputExtent = new WorldWrapperFAWEOutputExtent();
 
     private WorldWrapper(World parent) {
         this.parent = parent;
@@ -172,9 +170,10 @@ public class WorldWrapper extends AbstractWorld {
         return parent.setBlock(x, y, z, block);
     }
 
+    @NotNull
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        return parent.setTile(x, y, z, tile);
+    public FAWEOutputExtent faweOutput() {
+        return this.worldWrapperFAWEOutputExtent;
     }
 
     @Override
@@ -319,4 +318,14 @@ public class WorldWrapper extends AbstractWorld {
     public BiomeType getBiome(BlockVector3 position) {
         return parent.getBiome(position);
     }
+
+    public class WorldWrapperFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            return parent.faweOutput().setTile(x, y, z, tile);
+        }
+
+    }
+
 }
