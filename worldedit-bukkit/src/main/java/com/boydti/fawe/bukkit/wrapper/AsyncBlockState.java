@@ -40,10 +40,6 @@ public class AsyncBlockState implements BlockState {
         return state.getBlockType().getInternalId();
     }
 
-    public int getPropertyId() {
-        return state.getInternalId() >> BlockTypesCache.BIT_OFFSET;
-    }
-
     @Override
     public Block getBlock() {
         return block;

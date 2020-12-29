@@ -1,4 +1,4 @@
-rootProject.name = "FastAsyncWorldEdit"
+rootProject.name = "hastig"
 
 include("worldedit-libs")
 

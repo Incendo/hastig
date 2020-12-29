@@ -118,7 +118,7 @@ fun Project.applyShadowConfiguration() {
             include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
             include(project(":worldedit-core"))
         }
-        archiveFileName.set("FastAsyncWorldEdit-${project.version}.jar")
+        archiveFileName.set("hastig-${project.version}.jar")
         exclude("GradleStart**")
         exclude(".cache")
         exclude("LICENSE*")

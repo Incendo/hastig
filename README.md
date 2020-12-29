@@ -4,24 +4,13 @@
 
 ---
 
-FAWE is a fork of WorldEdit that has huge speed and memory improvements and considerably more features
+FAWE fork for Paper with focus on compatibility with the WorldEdit API and stability. Hastig will in the future
+be written using Mojang mappings.
 
-## Links 
+## Links
 
-* [Spigot Page](https://www.spigotmc.org/threads/fast-async-worldedit.100104/)
-* [Discord](https://discord.gg/KxkjDVg)
+* [Discord](https://discord.gg/aykZu32)
 * [Wiki](https://wiki.intellectualsites.com/FastAsyncWorldEdit/index)
-* [Report Issue](https://github.com/IntellectualSites/FastAsyncWorldEdit/issues)
-* [Crowdin](https://intellectualsites.crowdin.com/fastasyncworldedit)
-* [JavaDocs](https://ci.athion.net/job/FastAsyncWorldEdit-1.16/javadoc/)
-
-## Downloads
-### 1.15+
-* [Download](https://www.spigotmc.org/resources/fast-async-worldedit.13932/)
-* [Jenkins](https://ci.athion.net/job/FastAsyncWorldEdit-1.16/)
-
-Looking builds for older versions? Download them [here](https://intellectualsites.github.io/download/).
-
 
 ## Building
 FAWE uses gradle to build  

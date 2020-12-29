@@ -15,22 +15,16 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import org.bukkit.generator.BlockPopulator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import org.bukkit.generator.BlockPopulator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Represents an abstract regeneration handler.
@@ -144,7 +138,7 @@ public abstract class Regenerator<IChunkAccess, ProtoChunk extends IChunkAccess,
         
         //generate chunk coords lists with a certain radius
         Int2ObjectOpenHashMap<List<Long>> chunkCoordsForRadius = new Int2ObjectOpenHashMap<>();
-        chunkStati.keySet().stream().map(ChunkStatusWrapper::requiredNeigborChunkRadius0).distinct().forEach(radius -> {
+        chunkStati.keySet().stream().map(ChunkStatusWrapper::requiredNeighbourChunkRadius0).distinct().forEach(radius -> {
             if (radius == -1) //ignore ChunkStatus.EMPTY
                 return;
             int border = 16 - radius; //9 = 8 + 1, 8: max border radius used in chunk stages, 1: need 1 extra chunk for chunk features to generate at the border of the region
@@ -159,7 +153,7 @@ public abstract class Regenerator<IChunkAccess, ProtoChunk extends IChunkAccess,
 
         //generate lists for RegionLimitedWorldAccess, need to be square with odd length (e.g. 17x17), 17 = 1 middle chunk + 8 border chunks * 2
         Int2ObjectOpenHashMap<Long2ObjectOpenHashMap<List<IChunkAccess>>> worldlimits = new Int2ObjectOpenHashMap<>();
-        chunkStati.keySet().stream().map(ChunkStatusWrapper::requiredNeigborChunkRadius0).distinct().forEach(radius -> {
+        chunkStati.keySet().stream().map(ChunkStatusWrapper::requiredNeighbourChunkRadius0).distinct().forEach(radius -> {
             if (radius == -1) //ignore ChunkStatus.EMPTY
                 return;
             Long2ObjectOpenHashMap<List<IChunkAccess>> map = new Long2ObjectOpenHashMap<>();
@@ -180,7 +174,7 @@ public abstract class Regenerator<IChunkAccess, ProtoChunk extends IChunkAccess,
         //run generation tasks exluding FULL chunk status
         for (Map.Entry<ChunkStatus, Concurrency> entry : chunkStati.entrySet()) {
             ChunkStatus chunkStatus = entry.getKey();
-            int radius = chunkStatus.requiredNeigborChunkRadius0();
+            int radius = chunkStatus.requiredNeighbourChunkRadius0();
 
             List<Long> coords = chunkCoordsForRadius.get(radius);
             if (this.generateConcurrent && entry.getValue() == Concurrency.RADIUS) {
@@ -466,10 +460,10 @@ public abstract class Regenerator<IChunkAccess, ProtoChunk extends IChunkAccess,
          *
          * @return the radius of required neighbor chunks
          */
-        public abstract int requiredNeigborChunkRadius();
+        public abstract int requiredNeighbourChunkRadius();
 
-        int requiredNeigborChunkRadius0() {
-            return Math.max(0, requiredNeigborChunkRadius());
+        int requiredNeighbourChunkRadius0() {
+            return Math.max(0, requiredNeighbourChunkRadius());
         }
 
         /**
