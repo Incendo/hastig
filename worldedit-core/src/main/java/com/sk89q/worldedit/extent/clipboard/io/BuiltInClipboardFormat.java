@@ -20,23 +20,12 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.boydti.fawe.object.io.PGZIPOutputStream;
-import com.boydti.fawe.object.io.ResettableFileInputStream;
 import com.boydti.fawe.object.schematic.MinecraftStructure;
 import com.boydti.fawe.object.schematic.PNGWriter;
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NBTOutputStream;
-import com.sk89q.jnbt.NamedTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.*;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -129,44 +118,6 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
             return true;
         }
-    },
-
-    FAST("fast", "fawe") {
-
-        @Override
-        public String getPrimaryFileExtension() {
-            return "schem";
-        }
-
-        @Override
-        public ClipboardReader getReader(InputStream inputStream) throws IOException {
-            if (inputStream instanceof FileInputStream) {
-                inputStream = new ResettableFileInputStream((FileInputStream) inputStream);
-            }
-            BufferedInputStream buffered = new BufferedInputStream(inputStream);
-            NBTInputStream nbtStream = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(buffered)));
-            return new FastSchematicReader(nbtStream);
-        }
-
-        @Override
-        public ClipboardWriter getWriter(OutputStream outputStream) throws IOException {
-            OutputStream gzip;
-            if (outputStream instanceof PGZIPOutputStream || outputStream instanceof GZIPOutputStream) {
-                gzip = outputStream;
-            } else {
-                outputStream = new BufferedOutputStream(outputStream);
-                gzip = new PGZIPOutputStream(outputStream);
-            }
-            NBTOutputStream nbtStream = new NBTOutputStream(new BufferedOutputStream(gzip));
-            return new FastSchematicWriter(nbtStream);
-        }
-
-        @Override
-        public boolean isFormat(File file) {
-            String name = file.getName().toLowerCase(Locale.ROOT);
-            return name.endsWith(".schem") || name.endsWith(".sponge");
-        }
-
     },
 
     /**
