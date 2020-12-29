@@ -12,6 +12,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public interface IChunkExtent<T extends IChunk> extends Extent {
+public interface IChunkExtent<T extends IChunk> extends Extent, InputExtent.FAWEInputExtent {
     /**
      * Get the IChunk at a position (and cache it if it's not already)
      *
@@ -36,6 +37,18 @@ public interface IChunkExtent<T extends IChunk> extends Extent {
      * @return IChunk
      */
     T getOrCreateChunk(int chunkX, int chunkZ);
+
+    @NotNull
+    @Override
+    default FAWEInputExtent faweInput() {
+        return this;
+    }
+
+    @NotNull
+    @Override
+    default InputExtent input() {
+        return this;
+    }
 
     @Override
     default <B extends BlockStateHolder<B>> boolean setBlock(int x, @Range(from = 0, to = 255) int y, int z, B state) {
@@ -88,25 +101,25 @@ public interface IChunkExtent<T extends IChunk> extends Extent {
     @Override
     default int getSkyLight(int x, int y, int z) {
         final IChunk chunk = getOrCreateChunk(x >> 4, z >> 4);
-        return chunk.getSkyLight(x & 15, y, z & 15);
+        return chunk.faweInput().getSkyLight(x & 15, y, z & 15);
     }
 
     @Override
-    default int getEmmittedLight(int x, int y, int z) {
+    default int getEmittedLight(int x, int y, int z) {
         final IChunk chunk = getOrCreateChunk(x >> 4, z >> 4);
-        return chunk.getEmmittedLight(x & 15, y, z & 15);
+        return chunk.faweInput().getEmittedLight(x & 15, y, z & 15);
     }
 
     @Override
     default int getBrightness(int x, int y, int z) {
         final IChunk chunk = getOrCreateChunk(x >> 4, z >> 4);
-        return chunk.getBrightness(x & 15, y, z & 15);
+        return chunk.faweInput().getBrightness(x & 15, y, z & 15);
     }
 
     @Override
     default int getOpacity(int x, int y, int z) {
         final IChunk chunk = getOrCreateChunk(x >> 4, z >> 4);
-        return chunk.getOpacity(x & 15, y, z & 15);
+        return chunk.faweInput().getOpacity(x & 15, y, z & 15);
     }
 
     @Override

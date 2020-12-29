@@ -30,6 +30,8 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 
+import javax.annotation.Nonnull;
+
 /**
  * Provides the current state of blocks, entities, and so on.
  */
@@ -53,10 +55,6 @@ public interface InputExtent {
         return getBlock(position.getX(), position.getY(), position.getZ());
     }
 
-    default BlockState getBlock(int x, int y, int z) {
-        return getBlock(MutableBlockVector3.get(x, y, z));
-    }
-
     /**
      * Get an immutable snapshot of the block at the given location.
      *
@@ -65,10 +63,6 @@ public interface InputExtent {
      */
     default BaseBlock getFullBlock(BlockVector3 position) {
         return getFullBlock(position.getX(), position.getY(), position.getZ());
-    }
-
-    default BaseBlock getFullBlock(int x, int y, int z) {
-        return getFullBlock(MutableBlockVector3.get(x, y, z));
     }
 
     /**
@@ -83,10 +77,6 @@ public interface InputExtent {
      */
     @Deprecated default BiomeType getBiome(BlockVector2 position) {
         return getBiomeType(position.getX(), 0, position.getZ());
-    }
-
-    default BiomeType getBiomeType(int x, int y, int z) {
-        return getBiome(MutableBlockVector3.get(x, y, z));
     }
 
     /**
@@ -114,51 +104,93 @@ public interface InputExtent {
         return getBiome(position.toBlockVector2());
     }
 
-    /**
-     * Get the light level at the given location.
-     *
-     * @param position location
-     * @return the light level at the location
-     */
-    default int getEmmittedLight(MutableBlockVector3 position) {
-        return getEmmittedLight(position.getX(), position.getY(), position.getZ());
+    // FAWE Start
+    @Nonnull
+    default FAWEInputExtent faweInput() {
+        return new DefaultFAWEInputExtent(this);
     }
 
-    default int getEmmittedLight(int x, int y, int z) {
-        return 0;
+    default BlockState getBlock(int x, int y, int z) {
+        return getBlock(MutableBlockVector3.get(x, y, z));
     }
 
-    /**
-     * Get the sky light level at the given location.
-     *
-     * @param position location
-     * @return the sky light level at the location
-     */
-    default int getSkyLight(MutableBlockVector3 position) {
-        return getSkyLight(position.getX(), position.getY(), position.getZ());
+    default BaseBlock getFullBlock(int x, int y, int z) {
+        return getFullBlock(MutableBlockVector3.get(x, y, z));
     }
 
-    default int getSkyLight(int x, int y, int z) {
-        return 0;
+    default BiomeType getBiomeType(int x, int y, int z) {
+        return getBiome(MutableBlockVector3.get(x, y, z));
     }
 
-    default int getBrightness(MutableBlockVector3 position) {
-        return getBrightness(position.getX(), position.getY(), position.getZ());
+    interface FAWEInputExtent {
+
+        /**
+         * Get the light level at the given location.
+         *
+         * @param position location
+         * @return the light level at the location
+         */
+        default int getEmittedLight(MutableBlockVector3 position) {
+            return getEmittedLight(position.getX(), position.getY(), position.getZ());
+        }
+
+        default int getEmittedLight(int x, int y, int z) {
+            return 0;
+        }
+
+        /**
+         * Get the sky light level at the given location.
+         *
+         * @param position location
+         * @return the sky light level at the location
+         */
+        default int getSkyLight(MutableBlockVector3 position) {
+            return getSkyLight(position.getX(), position.getY(), position.getZ());
+        }
+
+        default int getSkyLight(int x, int y, int z) {
+            return 0;
+        }
+
+        default int getBrightness(MutableBlockVector3 position) {
+            return getBrightness(position.getX(), position.getY(), position.getZ());
+        }
+
+        default int getBrightness(int x, int y, int z) {
+            return input().getFullBlock(x, y, z).getMaterial().getLightValue();
+        }
+
+        default int getOpacity(MutableBlockVector3 position) {
+            return getOpacity(position.getX(), position.getY(), position.getZ());
+        }
+
+        default int getOpacity(int x, int y, int z) {
+            return input().getFullBlock(x, y, z).getMaterial().getLightOpacity();
+        }
+
+        default int[] getHeightMap(HeightMapType type) {
+            return new int[256];
+        }
+
+        @Nonnull InputExtent input();
+
     }
 
-    default int getBrightness(int x, int y, int z) {
-        return getFullBlock(x, y, z).getMaterial().getLightValue();
-    }
+    class DefaultFAWEInputExtent implements FAWEInputExtent {
 
-    default int getOpacity(MutableBlockVector3 position) {
-        return getOpacity(position.getX(), position.getY(), position.getZ());
-    }
+        private final InputExtent inputExtent;
 
-    default int getOpacity(int x, int y, int z) {
-        return getFullBlock(x, y, z).getMaterial().getLightOpacity();
-    }
+        public DefaultFAWEInputExtent(final InputExtent inputExtent) {
+            this.inputExtent = inputExtent;
+        }
 
-    default int[] getHeightMap(HeightMapType type) {
-        return new int[256];
+        @Nonnull
+        @Override
+        public InputExtent input() {
+            return this.inputExtent;
+        }
+
     }
+    // FAWE End
+
 }

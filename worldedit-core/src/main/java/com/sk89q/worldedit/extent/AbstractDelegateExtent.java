@@ -63,6 +63,8 @@ public class AbstractDelegateExtent implements Extent {
 
     private final AbstractDelegateExtentFAWEOutputExtent abstractDelegateExtentFAWEOutputExtent =
             new AbstractDelegateExtentFAWEOutputExtent();
+    private final AbstractDelegateExtentFAWEInputExtent abstractDelegateExtentFAWEInputExtent =
+            new AbstractDelegateExtentFAWEInputExtent(this);
 
     /**
      * Create a new instance.
@@ -87,6 +89,12 @@ public class AbstractDelegateExtent implements Extent {
     @Override
     public FAWEOutputExtent faweOutput() {
         return this.abstractDelegateExtentFAWEOutputExtent;
+    }
+
+    @NotNull
+    @Override
+    public FAWEInputExtent faweInput() {
+        return this.abstractDelegateExtentFAWEInputExtent;
     }
 
     @Override
@@ -126,21 +134,6 @@ public class AbstractDelegateExtent implements Extent {
     /*
      History
      */
-
-    @Override
-    public int getEmmittedLight(int x, int y, int z) {
-        return extent.getEmmittedLight(x, y, z);
-    }
-
-    @Override
-    public int getSkyLight(int x, int y, int z) {
-        return extent.getSkyLight(x, y, z);
-    }
-
-    @Override
-    public int getBrightness(int x, int y, int z) {
-        return extent.getBrightness(x, y, z);
-    }
 
     public void setChangeSet(AbstractChangeSet changeSet) {
         if (extent instanceof HistoryExtent) {
@@ -355,6 +348,30 @@ public class AbstractDelegateExtent implements Extent {
         public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
             return setBlock(x, y, z, getBlock(x, y, z).toBaseBlock(tile));
         }
+
+    }
+
+    public class AbstractDelegateExtentFAWEInputExtent extends DefaultFAWEInputExtent {
+
+        public AbstractDelegateExtentFAWEInputExtent(InputExtent inputExtent) {
+            super(inputExtent);
+        }
+
+        @Override
+        public int getEmittedLight(int x, int y, int z) {
+            return extent.faweInput().getEmittedLight(x, y, z);
+        }
+
+        @Override
+        public int getSkyLight(int x, int y, int z) {
+            return extent.faweInput().getSkyLight(x, y, z);
+        }
+
+        @Override
+        public int getBrightness(int x, int y, int z) {
+            return extent.faweInput().getBrightness(x, y, z);
+        }
+
 
     }
 

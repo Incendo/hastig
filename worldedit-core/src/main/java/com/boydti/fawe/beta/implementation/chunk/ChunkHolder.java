@@ -13,6 +13,7 @@ import com.boydti.fawe.beta.implementation.processors.EmptyBatchProcessor;
 import com.boydti.fawe.beta.implementation.queue.Pool;
 import com.boydti.fawe.config.Settings;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
@@ -33,7 +34,7 @@ import java.util.concurrent.Future;
  * An abstract {@link IChunk} class that implements basic get/set blocks.
  */
 @SuppressWarnings("rawtypes")
-public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputExtent.FAWEOutputExtent {
+public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputExtent.FAWEOutputExtent, InputExtent.FAWEInputExtent {
 
     private static final Pool<ChunkHolder> POOL = FaweCache.IMP.registerPool(ChunkHolder.class, ChunkHolder::new, Settings.IMP.QUEUE.POOL);
 
@@ -72,6 +73,18 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
     @NotNull
     @Override
     public FAWEOutputExtent faweOutput() {
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public FAWEInputExtent faweInput() {
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public InputExtent input() {
         return this;
     }
 
@@ -242,11 +255,11 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
                     }
                 }
             }
-            return chunk.chunkExisting.getSkyLight(x, y, z);
+            return chunk.chunkExisting.faweInput().getSkyLight(x, y, z);
         }
 
         @Override
-        public int getEmmittedLight(ChunkHolder chunk, int x, int y, int z) {
+        public int getEmittedLight(ChunkHolder chunk, int x, int y, int z) {
             if (chunk.chunkSet.getLight() != null) {
                 int layer = y >> 4;
                 if (chunk.chunkSet.getLight()[layer] != null) {
@@ -256,21 +269,21 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
                     }
                 }
             }
-            return chunk.chunkExisting.getEmmittedLight(x, y, z);
+            return chunk.chunkExisting.faweInput().getEmittedLight(x, y, z);
         }
 
         @Override
         public int getBrightness(ChunkHolder chunk, int x, int y, int z) {
-            return chunk.chunkExisting.getBrightness(x, y, z);
+            return chunk.chunkExisting.faweInput().getBrightness(x, y, z);
         }
 
         @Override
         public int getOpacity(ChunkHolder chunk, int x, int y, int z) {
-            return chunk.chunkExisting.getOpacity(x, y, z);
+            return chunk.chunkExisting.faweInput().getOpacity(x, y, z);
         }
 
         @Override public int[] getHeightMap(ChunkHolder chunk, HeightMapType type) {
-            return chunk.chunkExisting.getHeightMap(type);
+            return chunk.chunkExisting.faweInput().getHeightMap(type);
         }
     };
 
@@ -369,26 +382,26 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
 
         @Override
         public int getSkyLight(ChunkHolder chunk, int x, int y, int z) {
-            return chunk.chunkExisting.getSkyLight(x, y, z);
+            return chunk.chunkExisting.faweInput().getSkyLight(x, y, z);
         }
 
         @Override
-        public int getEmmittedLight(ChunkHolder chunk, int x, int y, int z) {
-            return chunk.chunkExisting.getEmmittedLight(x, y, z);
+        public int getEmittedLight(ChunkHolder chunk, int x, int y, int z) {
+            return chunk.chunkExisting.faweInput().getEmittedLight(x, y, z);
         }
 
         @Override
         public int getBrightness(ChunkHolder chunk, int x, int y, int z) {
-            return chunk.chunkExisting.getBrightness(x, y, z);
+            return chunk.chunkExisting.faweInput().getBrightness(x, y, z);
         }
 
         @Override
         public int getOpacity(ChunkHolder chunk, int x, int y, int z) {
-            return chunk.chunkExisting.getOpacity(x, y, z);
+            return chunk.chunkExisting.faweInput().getOpacity(x, y, z);
         }
 
         @Override public int[] getHeightMap(ChunkHolder chunk, HeightMapType type) {
-            return chunk.chunkExisting.getHeightMap(type);
+            return chunk.chunkExisting.faweInput().getHeightMap(type);
         }
     };
 
@@ -494,7 +507,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
         }
 
         @Override
-        public int getEmmittedLight(ChunkHolder chunk, int x, int y, int z) {
+        public int getEmittedLight(ChunkHolder chunk, int x, int y, int z) {
             if (chunk.chunkSet.getLight() != null) {
                 int layer = y >> 4;
                 if (chunk.chunkSet.getLight()[layer] != null) {
@@ -507,7 +520,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
             chunk.getOrCreateGet();
             chunk.delegate = BOTH;
             chunk.chunkExisting.trim(false);
-            return chunk.getEmmittedLight(x, y, z);
+            return chunk.getEmittedLight(x, y, z);
         }
 
         @Override
@@ -646,11 +659,11 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
         }
 
         @Override
-        public int getEmmittedLight(ChunkHolder chunk, int x, int y, int z) {
+        public int getEmittedLight(ChunkHolder chunk, int x, int y, int z) {
             chunk.getOrCreateGet();
             chunk.delegate = GET;
             chunk.chunkExisting.trim(false);
-            return chunk.getEmmittedLight(x, y, z);
+            return chunk.getEmittedLight(x, y, z);
         }
 
         @Override
@@ -899,8 +912,8 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
     }
 
     @Override
-    public int getEmmittedLight(int x, int y, int z) {
-        return delegate.getEmmittedLight(this, x, y, z);
+    public int getEmittedLight(int x, int y, int z) {
+        return delegate.getEmittedLight(this, x, y, z);
     }
 
     @Override
@@ -948,7 +961,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T>, OutputE
 
         int getSkyLight(ChunkHolder chunk, int x, int y, int z);
 
-        int getEmmittedLight(ChunkHolder chunk, int x, int y, int z);
+        int getEmittedLight(ChunkHolder chunk, int x, int y, int z);
 
         int getBrightness(ChunkHolder chunk, int x, int y, int z);
 

@@ -182,7 +182,7 @@ public class BukkitGetBlocks extends CharGetBlocks {
     }
 
     @Override
-    public int getEmmittedLight(int x, int y, int z) {
+    public int getEmittedLight(int x, int y, int z) {
         int layer = y >> 4;
         if (blockLight[layer] == null) {
             SectionPosition sectionPosition = SectionPosition.a(nmsChunk.getPos(), layer);

@@ -4,6 +4,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -16,7 +17,7 @@ import javax.annotation.Nullable;
  * A class representing a block with a position
  *  - Used for optimized block operations to avoid lookups
  */
-public abstract class FilterBlock extends BlockVector3 implements Extent, TileEntityBlock {
+public abstract class FilterBlock extends BlockVector3 implements Extent, TileEntityBlock, OutputExtent.FAWEOutputExtent {
 
     public abstract Extent getExtent();
 
@@ -65,12 +66,12 @@ public abstract class FilterBlock extends BlockVector3 implements Extent, TileEn
     @NotNull
     @Override
     public FAWEOutputExtent faweOutput() {
-        return new FAWEOutputExtent() {
-            @Override
-            public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-                return getExtent().faweOutput().setTile(x, y, z, tile);
-            }
-        };
+        return this;
+    }
+
+    @Override
+    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+        return getExtent().faweOutput().setTile(x, y, z, tile);
     }
 
     @Override

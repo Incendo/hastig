@@ -39,7 +39,6 @@ public interface IQueueExtent<T extends IChunk> extends Flushable, Trimable, ICh
     @Override
     void disableQueue();
 
-
     /**
      * Initialize the queue (for reusability)
      * @param extent

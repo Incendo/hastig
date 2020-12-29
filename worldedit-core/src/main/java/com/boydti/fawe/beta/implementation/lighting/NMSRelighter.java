@@ -229,7 +229,7 @@ public class NMSRelighter implements Relighter {
                                     int x = lx + bx;
                                     int y = yStart + j;
                                     int z = lz + bz;
-                                    int oldLevel = iChunk.getEmmittedLight(lx, y, lz);
+                                    int oldLevel = iChunk.getEmittedLight(lx, y, lz);
                                     int newLevel = iChunk.getBrightness(lx, y, lz);
                                     if (oldLevel != newLevel) {
                                         iChunk.setBlockLight(lx, y, lz, newLevel);
@@ -280,7 +280,7 @@ public class NMSRelighter implements Relighter {
             if (!iChunk.isInit()) {
                 iChunk.init(queue, node.getX() >> 4, node.getZ() >> 4);
             }
-            int lightLevel = iChunk.getEmmittedLight(node.getX() & 15, node.getY(), node.getZ() & 15);
+            int lightLevel = iChunk.getEmittedLight(node.getX() & 15, node.getY(), node.getZ() & 15);
             BlockState state = this.queue.getBlock(node.getX(), node.getY(), node.getZ());
             String id = state.getBlockType().getId().toLowerCase(Locale.ROOT);
             if (lightLevel <= 1) {
@@ -711,7 +711,7 @@ public class NMSRelighter implements Relighter {
         if (!iChunk.isInit()) {
             iChunk.init(this.queue, x >> 4, z >> 4);
         }
-        int current = iChunk.getEmmittedLight(x & 15, y, z & 15);
+        int current = iChunk.getEmittedLight(x & 15, y, z & 15);
         if (current != 0 && current < currentLight) {
             iChunk.setBlockLight(x, y, z, 0);
             if (current > 1) {
@@ -745,7 +745,7 @@ public class NMSRelighter implements Relighter {
             if (!iChunk.isInit()) {
                 iChunk.init(this.queue, x >> 4, z >> 4);
             }
-            int current = iChunk.getEmmittedLight(x & 15, y, z & 15);
+            int current = iChunk.getEmittedLight(x & 15, y, z & 15);
             if (currentLight > current) {
                 iChunk.setBlockLight(x & 15, y, z & 15, currentLight);
                 mutableBlockPos.setComponents(x, y, z);

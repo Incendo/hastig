@@ -17,6 +17,7 @@ import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.NBTOutputStream;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
@@ -47,7 +48,8 @@ import java.util.concurrent.Future;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class MCAChunk implements IChunk {
+public class MCAChunk implements IChunk, InputExtent.FAWEInputExtent {
+
     public final boolean[] hasSections = new boolean[16];
     public final BiomeType[] biomes = new BiomeType[1024];
     public final char[] blocks = new char[65536];
@@ -101,6 +103,18 @@ public class MCAChunk implements IChunk {
     @Override
     public FAWEOutputExtent faweOutput() {
         return this.mcaChunkFAWEOutputExtent;
+    }
+
+    @NotNull
+    @Override
+    public FAWEInputExtent faweInput() {
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public InputExtent input() {
+        return this;
     }
 
     @Override
@@ -522,7 +536,7 @@ public class MCAChunk implements IChunk {
         return 0;
     }
 
-    @Override public int getEmmittedLight(int x, int y, int z) {
+    @Override public int getEmittedLight(int x, int y, int z) {
         return 0;
     }
 

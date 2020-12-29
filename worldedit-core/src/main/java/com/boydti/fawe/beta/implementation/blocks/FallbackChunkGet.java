@@ -9,11 +9,13 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.InputExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,7 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
-public class FallbackChunkGet implements IChunkGet {
+public class FallbackChunkGet implements IChunkGet, InputExtent.FAWEInputExtent {
     private final int bx;
     private final int bz;
     private final Extent extent;
@@ -32,6 +34,18 @@ public class FallbackChunkGet implements IChunkGet {
         this.extent = extent;
         this.bx = chunkX << 4;
         this.bz = chunkZ << 4;
+    }
+
+    @NotNull
+    @Override
+    public FAWEInputExtent faweInput() {
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public InputExtent input() {
+        return this;
     }
 
     @Override
@@ -50,15 +64,15 @@ public class FallbackChunkGet implements IChunkGet {
     }
 
     @Override public int getSkyLight(int x, int y, int z) {
-        return extent.getSkyLight(bx + x, y, bz + z);
+        return extent.faweInput().getSkyLight(bx + x, y, bz + z);
     }
 
     @Override public int[] getHeightMap(HeightMapType type) {
-        return extent.getHeightMap(type);
+        return extent.faweInput().getHeightMap(type);
     }
 
-    @Override public int getEmmittedLight(int x, int y, int z) {
-        return extent.getEmmittedLight(bx + x, y, bz + z);
+    @Override public int getEmittedLight(int x, int y, int z) {
+        return extent.faweInput().getEmittedLight(bx + x, y, bz + z);
     }
 
     @Override
