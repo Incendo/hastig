@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Bug report for FastAsyncWorldEdit
+about: Bug report for hastig
 title: ''
 labels: Requires Testing
 assignees: ''
@@ -13,7 +13,7 @@ assignees: ''
 <!--- If you are using 1.14 or 1.15 consider updating to 1.16.3 before raising an issue -->
 <!--- The priority lays on 1.16 right now, so issues reported for or 1.15 will be fixed for the 1.16 versions -->
 
-**[REQUIRED] FastAsyncWorldEdit Configuration Files** 
+**[REQUIRED] Hastig Configuration Files**
 <!--- Issue /fawe debugpaste in game or in your console and copy the supplied URL here -->
 <!--- If you cannot perform the above, we require logs/latest.log; config.yml and config-legacy.yml -->
 <!--- Please provide this information by using a paste service such as https://haste.athion.net -->

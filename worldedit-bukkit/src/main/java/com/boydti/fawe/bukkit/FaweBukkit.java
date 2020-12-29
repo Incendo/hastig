@@ -6,24 +6,15 @@ import com.boydti.fawe.beta.implementation.cache.preloader.AsyncPreloader;
 import com.boydti.fawe.beta.implementation.cache.preloader.Preloader;
 import com.boydti.fawe.beta.implementation.queue.QueueHandler;
 import com.boydti.fawe.bukkit.adapter.BukkitQueueHandler;
-import com.boydti.fawe.bukkit.listener.BrushListener;
-import com.boydti.fawe.bukkit.listener.BukkitImageListener;
-import com.boydti.fawe.bukkit.listener.CFIPacketListener;
-import com.boydti.fawe.bukkit.listener.ChunkListener9;
-import com.boydti.fawe.bukkit.listener.RenderListener;
-import com.boydti.fawe.bukkit.regions.FreeBuildRegion;
-import com.boydti.fawe.bukkit.regions.GriefPreventionFeature;
-import com.boydti.fawe.bukkit.regions.ResidenceFeature;
-import com.boydti.fawe.bukkit.regions.TownyFeature;
-import com.boydti.fawe.bukkit.regions.Worldguard;
+import com.boydti.fawe.bukkit.listener.*;
+import com.boydti.fawe.bukkit.regions.*;
 import com.boydti.fawe.bukkit.util.BukkitTaskMan;
 import com.boydti.fawe.bukkit.util.ItemUtil;
 import com.boydti.fawe.bukkit.util.image.BukkitImageViewer;
 import com.boydti.fawe.config.Settings;
 import com.boydti.fawe.regions.FaweMaskManager;
-import com.boydti.fawe.util.ThirdPartyManager;
 import com.boydti.fawe.util.TaskManager;
-import com.boydti.fawe.util.WEManager;
+import com.boydti.fawe.util.ThirdPartyManager;
 import com.boydti.fawe.util.image.ImageViewer;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
@@ -80,9 +71,6 @@ public class FaweBukkit implements IFawe, Listener {
 
         chunksStretched =
             Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]) >= 16;
-
-        //PlotSquared support is limited to Spigot/Paper as of 02/20/2020
-        TaskManager.IMP.later(this::setupPlotSquared, 0);
 
         // Registered delayed Event Listeners
         TaskManager.IMP.task(() -> {
@@ -294,18 +282,4 @@ public class FaweBukkit implements IFawe, Listener {
         return chunksStretched;
     }
 
-    private void setupPlotSquared() {
-        Plugin plotSquared = this.plugin.getServer().getPluginManager().getPlugin("PlotSquared");
-        if (plotSquared == null) {
-            return;
-        }
-        if (plotSquared.getClass().getPackage().toString().contains("intellectualsites")) {
-            WEManager.IMP.managers
-                .add(new com.boydti.fawe.bukkit.regions.plotsquaredv4.PlotSquaredFeature());
-        } else {
-            WEManager.IMP.managers
-                .add(new com.boydti.fawe.bukkit.regions.plotsquared.PlotSquaredFeature());
-        }
-        log.info("Plugin 'PlotSquared' found. Using it now.");
-    }
 }

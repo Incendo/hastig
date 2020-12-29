@@ -20,16 +20,18 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 /**
  * Thrown if the world has been unloaded.
  */
-class WorldUnloadedException extends WorldEditException {
+final class WorldUnloadedException extends WorldEditException {
 
     /**
      * Create a new instance.
      */
     WorldUnloadedException() {
-        super("The world was unloaded already");
+        super(TextComponent.of("The world was unloaded already"));
     }
+
 }
