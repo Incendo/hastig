@@ -1,13 +1,7 @@
 package com.boydti.fawe.beta.implementation;
 
 import com.boydti.fawe.beta.IChunk;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.IntArrayTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.LongTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -18,12 +12,10 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
+
+import java.util.*;
 
 public interface IChunkExtent<T extends IChunk> extends Extent {
     /**
@@ -41,10 +33,10 @@ public interface IChunkExtent<T extends IChunk> extends Extent {
         return chunk.setBlock(x & 15, y, z & 15, state);
     }
 
+    @NotNull
     @Override
-    default boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        final IChunk chunk = getOrCreateChunk(x >> 4, z >> 4);
-        return chunk.setTile(x & 15, y, z & 15, tile);
+    default FAWEOutputExtent faweOutput() {
+        return new IChunkExtentFAWEOutputExtent<>(this);
     }
 
     @Override
@@ -81,18 +73,6 @@ public interface IChunkExtent<T extends IChunk> extends Extent {
     default BiomeType getBiome(BlockVector3 position) {
         final IChunk chunk = getOrCreateChunk(position.getX() >> 4, position.getZ() >> 4);
         return chunk.getBiomeType(position.getX() & 15, position.getY(), position.getZ() & 15);
-    }
-
-    @Override
-    default void setSkyLight(int x, int y, int z, int value) {
-        final IChunk chunk = getOrCreateChunk(x >> 4, z >> 4);
-        chunk.setSkyLight(x & 15, y, z & 15, value);
-    }
-
-    @Override
-    default void setBlockLight(int x, int y, int z, int value) {
-        final IChunk chunk = getOrCreateChunk(x >> 4, z >> 4);
-        chunk.setSkyLight(x & 15, y, z & 15, value);
     }
 
     @Override
@@ -200,6 +180,33 @@ public interface IChunkExtent<T extends IChunk> extends Extent {
         @Override
         public Extent getExtent() {
             return extent;
+        }
+    }
+
+    class IChunkExtentFAWEOutputExtent<T extends IChunk> implements FAWEOutputExtent {
+
+        private final IChunkExtent<T> iChunkExtent;
+
+        public IChunkExtentFAWEOutputExtent(final IChunkExtent<T> iChunkExtent) {
+            this.iChunkExtent = iChunkExtent;
+        }
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            final IChunk chunk = iChunkExtent.getOrCreateChunk(x >> 4, z >> 4);
+            return chunk.faweOutput().setTile(x & 15, y, z & 15, tile);
+        }
+
+        @Override
+        public void setSkyLight(int x, int y, int z, int value) {
+            final IChunk chunk = iChunkExtent.getOrCreateChunk(x >> 4, z >> 4);
+            chunk.faweOutput().setSkyLight(x & 15, y, z & 15, value);
+        }
+
+        @Override
+        public void setBlockLight(int x, int y, int z, int value) {
+            final IChunk chunk = iChunkExtent.getOrCreateChunk(x >> 4, z >> 4);
+            chunk.faweOutput().setSkyLight(x & 15, y, z & 15, value);
         }
     }
 }

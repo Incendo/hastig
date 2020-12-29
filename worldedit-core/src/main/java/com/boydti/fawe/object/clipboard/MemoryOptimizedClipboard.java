@@ -9,6 +9,7 @@ import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard.ClipboardEntity;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -16,22 +17,15 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
-import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.block.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class MemoryOptimizedClipboard extends LinearClipboard {
+public class MemoryOptimizedClipboard extends LinearClipboard implements OutputExtent.FAWEOutputExtent {
 
     private static final int BLOCK_SIZE = 1048576 * 2;
     private static final int BLOCK_MASK = 1048575;
@@ -253,6 +247,12 @@ public class MemoryOptimizedClipboard extends LinearClipboard {
             }
         }
         return total;
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this;
     }
 
     @Override

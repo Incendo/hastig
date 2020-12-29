@@ -12,50 +12,31 @@ import com.boydti.fawe.jnbt.streamer.ValueReader;
 import com.boydti.fawe.object.collection.BitArray;
 import com.boydti.fawe.object.collection.BlockVector3ChunkMap;
 import com.boydti.fawe.util.MathMan;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTConstants;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NBTOutputStream;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
-import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockID;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.block.BlockTypesCache;
+import com.sk89q.worldedit.world.block.*;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Future;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.Future;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MCAChunk implements IChunk {
     public final boolean[] hasSections = new boolean[16];
-
-    public boolean hasBiomes = false;
     public final BiomeType[] biomes = new BiomeType[1024];
-
     public final char[] blocks = new char[65536];
-
     public final BlockVector3ChunkMap<CompoundTag> tiles = new BlockVector3ChunkMap<>();
     public final Map<UUID, CompoundTag> entities = new HashMap<>();
+    private final MCAChunkFAWEOutputExtent mcaChunkFAWEOutputExtent = new MCAChunkFAWEOutputExtent();
+    public boolean hasBiomes = false;
     public long inhabitedTime = System.currentTimeMillis();
     public long lastUpdate;
 
@@ -68,6 +49,12 @@ public class MCAChunk implements IChunk {
     private boolean createCopy = false;
 
     public MCAChunk() {}
+
+    public MCAChunk(NBTInputStream nis, int chunkX, int chunkZ, boolean readPos) throws IOException {
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
+        read(nis, readPos);
+    }
 
     private boolean readLayer(Section section) {
         if (section.palette == null || section.layer == -1 || section.blocksLength == -1 || section.palette[section.palette.length - 1] == null || section.blocks == null) {
@@ -92,17 +79,10 @@ public class MCAChunk implements IChunk {
         return true;
     }
 
-    private static class Section {
-        public int layer = -1;
-        public long[] blocks;
-        public int blocksLength = -1;
-        public BlockState[] palette;
-    }
-
-    public MCAChunk(NBTInputStream nis, int chunkX, int chunkZ, boolean readPos) throws IOException {
-        this.chunkX = chunkX;
-        this.chunkZ = chunkZ;
-        read(nis, readPos);
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this.mcaChunkFAWEOutputExtent;
     }
 
     @Override
@@ -377,25 +357,25 @@ public class MCAChunk implements IChunk {
         return inhabitedTime;
     }
 
-    public long getLastUpdate() {
-        return lastUpdate;
-    }
-
     public void setInhabitedTime(long inhabitedTime) {
         this.inhabitedTime = inhabitedTime;
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
     }
 
     public void setLastUpdate(long lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
     public void setDeleted(boolean deleted) {
         setModified();
         this.deleted = deleted;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
     @Override
@@ -432,29 +412,6 @@ public class MCAChunk implements IChunk {
             }
         }
         return bitMask;
-    }
-
-    @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) {
-        setModified();
-        if (tile != null) {
-            tiles.put(x, y, z, tile);
-        } else {
-            return tiles.remove(x, y, z) != null;
-        }
-        return true;
-    }
-
-    @Override public void setBlockLight(int x, int y, int z, int value) {
-
-    }
-
-    @Override public void setSkyLight(int x, int y, int z, int value) {
-
-    }
-
-    @Override public void setHeightMap(HeightMapType type, int[] heightMap) {
-
     }
 
     @Override public void removeSectionLighting(int layer, boolean sky) {
@@ -615,12 +572,12 @@ public class MCAChunk implements IChunk {
         return this.entities.get(uuid);
     }
 
-    @Override public void setCreateCopy(boolean createCopy) {
-        this.createCopy = createCopy;
-    }
-
     @Override public boolean isCreateCopy() {
         return createCopy;
+    }
+
+    @Override public void setCreateCopy(boolean createCopy) {
+        this.createCopy = createCopy;
     }
 
     @Override
@@ -636,4 +593,35 @@ public class MCAChunk implements IChunk {
             filter.finishChunk(this);
         }
     }
+
+    private static class Section {
+        public int layer = -1;
+        public long[] blocks;
+        public int blocksLength = -1;
+        public BlockState[] palette;
+    }
+
+    public class MCAChunkFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override public void setBlockLight(int x, int y, int z, int value) {
+        }
+
+        @Override public void setSkyLight(int x, int y, int z, int value) {
+        }
+
+        @Override public void setHeightMap(HeightMapType type, int[] heightMap) {
+        }
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) {
+            setModified();
+            if (tile != null) {
+                tiles.put(x, y, z, tile);
+            } else {
+                return tiles.remove(x, y, z) != null;
+            }
+            return true;
+        }
+    }
+
 }

@@ -8,11 +8,11 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 /**
  * Interface for setting blocks
@@ -33,18 +33,6 @@ public interface IChunkSet extends IBlocks, OutputExtent {
     void setBlocks(int layer, char[] data);
 
     boolean isEmpty();
-
-    @Override
-    boolean setTile(int x, int y, int z, CompoundTag tile);
-
-    @Override
-    void setBlockLight(int x, int y, int z, int value);
-
-    @Override
-    void setSkyLight(int x, int y, int z, int value);
-
-    @Override
-    void setHeightMap(HeightMapType type, int[] heightMap);
 
     void setLightLayer(int layer, char[] toSet);
 

@@ -39,13 +39,14 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -59,6 +60,9 @@ public class AbstractDelegateExtent implements Extent {
 
     //Not safe for public usage
     public Extent extent;
+
+    private final AbstractDelegateExtentFAWEOutputExtent abstractDelegateExtentFAWEOutputExtent =
+            new AbstractDelegateExtentFAWEOutputExtent();
 
     /**
      * Create a new instance.
@@ -77,6 +81,12 @@ public class AbstractDelegateExtent implements Extent {
      */
     public Extent getExtent() {
         return extent;
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this.abstractDelegateExtentFAWEOutputExtent;
     }
 
     @Override
@@ -160,11 +170,6 @@ public class AbstractDelegateExtent implements Extent {
     }
 
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        return setBlock(x, y, z, getBlock(x, y, z).toBaseBlock(tile));
-    }
-
-    @Override
     public boolean fullySupports3DBiomes() {
         return extent.fullySupports3DBiomes();
     }
@@ -177,16 +182,6 @@ public class AbstractDelegateExtent implements Extent {
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         return extent.setBiome(position.getX(), position.getY(), position.getZ(), biome);
-    }
-
-    @Override
-    public void setBlockLight(int x, int y, int z, int value) {
-        extent.setSkyLight(x, y, z, value);
-    }
-
-    @Override
-    public void setSkyLight(int x, int y, int z, int value) {
-        extent.setSkyLight(x, y, z, value);
     }
 
     @Override
@@ -343,4 +338,24 @@ public class AbstractDelegateExtent implements Extent {
     protected Operation commitBefore() {
         return null;
     }
+
+    public class AbstractDelegateExtentFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override
+        public void setBlockLight(int x, int y, int z, int value) {
+            extent.faweOutput().setSkyLight(x, y, z, value);
+        }
+
+        @Override
+        public void setSkyLight(int x, int y, int z, int value) {
+            extent.faweOutput().setSkyLight(x, y, z, value);
+        }
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            return setBlock(x, y, z, getBlock(x, y, z).toBaseBlock(tile));
+        }
+
+    }
+
 }

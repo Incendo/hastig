@@ -259,7 +259,7 @@ public class CharFilterBlock extends ChunkFilterBlock {
         delegate.set(this, block.getOrdinalChar());
         final CompoundTag nbt = block.getNbtData();
         if (nbt != null) { // TODO optimize check via ImmutableBaseBlock
-            set.setTile(x, yy + y, z, nbt);
+            set.faweOutput().setTile(x, yy + y, z, nbt);
         }
     }
 
@@ -277,7 +277,7 @@ public class CharFilterBlock extends ChunkFilterBlock {
     @Override
     public void setNbtData(CompoundTag tag) {
         if (tag != null) {
-            set.setTile(x, y + yy, z, tag);
+            set.faweOutput().setTile(x, y + yy, z, tag);
         }
     }
 

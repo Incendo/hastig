@@ -33,6 +33,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -46,21 +47,14 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.Identifiable;
-import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.*;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
-import com.sk89q.worldedit.world.block.BlockID;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.block.BlockTypesCache;
+import com.sk89q.worldedit.world.block.*;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,12 +67,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class HeightMapMCAGenerator extends MCAWriter implements StreamChange, Drawable,
-    VirtualWorld {
+    VirtualWorld, OutputExtent.FAWEOutputExtent {
 
     private final MutableBlockVector3 mutable = new MutableBlockVector3();
 
@@ -126,6 +119,12 @@ public class HeightMapMCAGenerator extends MCAWriter implements StreamChange, Dr
         protected Object clone() throws CloneNotSupportedException {
             return super.clone();
         }
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this;
     }
 
     @Override
@@ -2129,4 +2128,5 @@ public class HeightMapMCAGenerator extends MCAWriter implements StreamChange, Dr
         getLogger(HeightMapMCAGenerator.class).debug("Should not be using buffering with HMMG");
         return new FallbackChunkGet(this, x, z);
     }
+
 }

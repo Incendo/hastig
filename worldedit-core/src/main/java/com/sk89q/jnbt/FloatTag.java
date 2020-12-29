@@ -19,8 +19,6 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.jnbt.fawe.NumberTag;
-
 /**
  * The {@code TAG_Float} tag.
  */

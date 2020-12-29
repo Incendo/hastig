@@ -10,6 +10,7 @@ import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.OutputExtent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -21,6 +22,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +53,7 @@ import java.util.stream.Collectors;
  * - Uses an auto closable RandomAccessFile for getting / setting id / data
  * - I don't know how to reduce nbt / entities to O(2) complexity, so it is stored in memory.
  */
-public class DiskOptimizedClipboard extends LinearClipboard implements Closeable {
+public class DiskOptimizedClipboard extends LinearClipboard implements Closeable, OutputExtent.FAWEOutputExtent {
 
     private static final Logger log = LoggerFactory.getLogger(DiskOptimizedClipboard.class);
 
@@ -113,6 +115,12 @@ public class DiskOptimizedClipboard extends LinearClipboard implements Closeable
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this;
     }
 
     @Override

@@ -13,11 +13,15 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class ReadOnlyClipboard extends SimpleClipboard {
+
+    private final ReadOnlyClipboardFAWEOutputExtent readOnlyClipboardFAWEOutputExtent =
+            new ReadOnlyClipboardFAWEOutputExtent();
     public final Region region;
 
     public ReadOnlyClipboard(Region region) {
@@ -69,6 +73,12 @@ public abstract class ReadOnlyClipboard extends SimpleClipboard {
         };
     }
 
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this.readOnlyClipboardFAWEOutputExtent;
+    }
+
     @Override
     public Region getRegion() {
         return region;
@@ -93,11 +103,6 @@ public abstract class ReadOnlyClipboard extends SimpleClipboard {
     }
 
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tag) {
-        throw new UnsupportedOperationException("Clipboard is immutable");
-    }
-
-    @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         throw new UnsupportedOperationException("Clipboard is immutable");
     }
@@ -106,4 +111,14 @@ public abstract class ReadOnlyClipboard extends SimpleClipboard {
     public void removeEntity(Entity entity) {
         throw new UnsupportedOperationException("Clipboard is immutable");
     }
+
+    public class ReadOnlyClipboardFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tag) {
+            throw new UnsupportedOperationException("Clipboard is immutable");
+        }
+
+    }
+
 }

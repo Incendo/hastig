@@ -47,11 +47,12 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * A null implementation of {@link World} that drops all changes and
@@ -61,7 +62,15 @@ public class NullWorld extends AbstractWorld {
 
     private static final NullWorld INSTANCE = new NullWorld();
 
+    private final NullWorldFAWEOutputExtent nullWorldFAWEOutputExtent = new NullWorldFAWEOutputExtent();
+
     protected NullWorld() {
+    }
+
+    @NotNull
+    @Override
+    public FAWEOutputExtent faweOutput() {
+        return this.nullWorldFAWEOutputExtent;
     }
 
     @Override
@@ -191,11 +200,6 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
-        return false;
-    }
-
-    @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         return getBlock(position).toBaseBlock();
     }
@@ -233,4 +237,14 @@ public class NullWorld extends AbstractWorld {
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         return false;
     }
+
+    public class NullWorldFAWEOutputExtent implements FAWEOutputExtent {
+
+        @Override
+        public boolean setTile(int x, int y, int z, CompoundTag tile) throws WorldEditException {
+            return false;
+        }
+
+    }
+
 }

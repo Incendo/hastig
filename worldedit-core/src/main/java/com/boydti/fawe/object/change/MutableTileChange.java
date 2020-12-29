@@ -33,6 +33,6 @@ public class MutableTileChange implements Change {
         int x = tag.getInt("x");
         int y = tag.getInt("y");
         int z = tag.getInt("z");
-        context.getExtent().setTile(x, y, z, tag);
+        context.getExtent().faweOutput().setTile(x, y, z, tag);
     }
 }
