@@ -1,7 +1,7 @@
 package com.boydti.fawe.object.collection;
 
-import java.util.Arrays;
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 import static it.unimi.dsi.fastutil.HashCommon.arraySize;
 

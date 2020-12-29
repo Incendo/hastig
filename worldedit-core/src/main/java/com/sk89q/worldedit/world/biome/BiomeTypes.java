@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.world.biome;
 
-import java.util.Collection;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * Stores a list of common {@link BiomeType BiomeTypes}.

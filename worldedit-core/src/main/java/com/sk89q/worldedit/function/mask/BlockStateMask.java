@@ -28,9 +28,9 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 @Deprecated
 public class BlockStateMask extends AbstractExtentMask {

@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.util.io;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

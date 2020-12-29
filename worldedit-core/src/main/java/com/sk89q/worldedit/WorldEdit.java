@@ -74,6 +74,8 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import javax.script.ScriptException;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -87,8 +89,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nullable;
-import javax.script.ScriptException;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.sk89q.worldedit.event.platform.Interaction.HIT;

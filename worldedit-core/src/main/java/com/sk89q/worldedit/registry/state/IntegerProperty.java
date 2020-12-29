@@ -21,9 +21,9 @@ package com.sk89q.worldedit.registry.state;
 
 import com.boydti.fawe.util.StringMan;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class IntegerProperty extends AbstractProperty<Integer> {
 

@@ -1,5 +1,7 @@
 package com.boydti.fawe.object.io;
 
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -17,8 +19,6 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
 
 /**
  * A multi-threaded version of {@link GZIPOutputStream}.

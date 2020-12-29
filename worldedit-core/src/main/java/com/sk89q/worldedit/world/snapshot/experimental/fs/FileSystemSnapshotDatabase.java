@@ -35,6 +35,7 @@ import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotDatabase;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -46,7 +47,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

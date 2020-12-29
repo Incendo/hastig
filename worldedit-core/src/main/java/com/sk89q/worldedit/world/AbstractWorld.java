@@ -37,9 +37,9 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.PriorityQueue;
-import javax.annotation.Nullable;
 
 /**
  * An abstract implementation of {@link World}.

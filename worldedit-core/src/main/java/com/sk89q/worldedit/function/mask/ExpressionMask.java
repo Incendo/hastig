@@ -25,8 +25,8 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 
-import java.util.function.IntSupplier;
 import javax.annotation.Nullable;
+import java.util.function.IntSupplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

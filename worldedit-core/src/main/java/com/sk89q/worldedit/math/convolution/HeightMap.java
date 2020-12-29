@@ -31,8 +31,8 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.Iterator;
 import javax.annotation.Nullable;
+import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

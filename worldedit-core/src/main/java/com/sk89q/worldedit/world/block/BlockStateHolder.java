@@ -29,10 +29,10 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.registry.state.PropertyKey;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 public interface BlockStateHolder<B extends BlockStateHolder<B>> extends TileEntityBlock, Pattern {
 

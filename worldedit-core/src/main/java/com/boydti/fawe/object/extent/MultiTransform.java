@@ -9,8 +9,8 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-import java.util.Collection;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 public class MultiTransform extends RandomTransform {
 

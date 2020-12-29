@@ -25,10 +25,10 @@ import com.sk89q.worldedit.util.WeightedChoice.Choice;
 import com.sk89q.worldedit.util.function.LevenshteinDistance;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

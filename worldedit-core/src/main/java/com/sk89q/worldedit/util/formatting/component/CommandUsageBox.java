@@ -29,8 +29,8 @@ import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.config.ColorConfig;
 import org.enginehub.piston.util.HelpGenerator;
 
-import java.util.List;
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;

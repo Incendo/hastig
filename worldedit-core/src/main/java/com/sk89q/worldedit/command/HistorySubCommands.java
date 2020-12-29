@@ -48,6 +48,7 @@ import org.enginehub.piston.annotation.param.Switch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -56,7 +57,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 
 import static com.sk89q.worldedit.internal.command.CommandUtil.checkCommandArgument;
 

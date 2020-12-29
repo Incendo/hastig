@@ -24,8 +24,8 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
-import java.util.OptionalLong;
 import javax.annotation.Nullable;
+import java.util.OptionalLong;
 
 /**
  * Regeneration options for {@link World#regenerate(Region, Extent, RegenOptions)}.

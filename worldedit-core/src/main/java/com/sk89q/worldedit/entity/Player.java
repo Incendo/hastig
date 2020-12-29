@@ -51,8 +51,8 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 
-import java.io.File;
 import javax.annotation.Nullable;
+import java.io.File;
 
 /**
  * Represents a player.
