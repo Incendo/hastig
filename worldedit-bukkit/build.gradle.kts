@@ -42,7 +42,7 @@ dependencies {
     "api"(project(":worldedit-libs:bukkit"))
     "compile"(":worldedit-adapters:")
     // Tuinity NMS jar
-    "compile"("com.tuinity:tuinity:1.16.4-R0.1-20201229.195644-1")
+    "compile"("com.tuinity:tuinity:1.16.4-R0.1-20210104.003225-5")
     "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
     "api"("com.destroystokyo.paper:paper-api:1.16.4-R0.1-SNAPSHOT") {
         exclude("junit", "junit")

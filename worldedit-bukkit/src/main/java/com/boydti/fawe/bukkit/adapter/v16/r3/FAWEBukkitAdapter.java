@@ -51,7 +51,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
-public final class BukkitAdapter extends NMSAdapter {
+public final class FAWEBukkitAdapter extends NMSAdapter {
     /*
     NMS fields
     */

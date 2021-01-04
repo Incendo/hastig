@@ -1,6 +1,5 @@
 package com.boydti.fawe.bukkit.adapter.v16.r3;
 
-
 import com.boydti.fawe.FaweCache;
 import com.boydti.fawe.beta.IChunkGetCopy;
 import com.boydti.fawe.bukkit.adapter.v16.r3.nbt.LazyCompoundTag_1_16_4;
@@ -43,7 +42,7 @@ public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGetCop
 
     protected void storeTile(TileEntity tile) {
         tiles.put(BlockVector3.at(tile.getPosition().getX(), tile.getPosition().getY(), tile.getPosition().getZ()),
-            new LazyCompoundTag_1_16_4(Suppliers.memoize(() -> tile.save(new NBTTagCompound()))));
+                new LazyCompoundTag_1_16_4(Suppliers.memoize(() -> tile.save(new NBTTagCompound()))));
     }
 
     @Override
@@ -90,7 +89,7 @@ public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGetCop
     }
 
     protected void storeBiomes(BiomeStorage biomeStorage) {
-        this.biomeStorage = new BiomeStorage(biomeStorage.g, BukkitAdapter.getBiomeArray(biomeStorage).clone());
+        this.biomeStorage = new BiomeStorage(biomeStorage.g, FAWEBukkitAdapter.getBiomeArray(biomeStorage).clone());
     }
 
     @Override

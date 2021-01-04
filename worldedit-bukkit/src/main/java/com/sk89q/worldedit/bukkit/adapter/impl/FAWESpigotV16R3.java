@@ -23,7 +23,7 @@ import com.boydti.fawe.FaweCache;
 import com.boydti.fawe.beta.IChunkGet;
 import com.boydti.fawe.beta.implementation.packet.ChunkPacket;
 import com.boydti.fawe.bukkit.adapter.v16.r3.BlockMaterial;
-import com.boydti.fawe.bukkit.adapter.v16.r3.BukkitAdapter;
+import com.boydti.fawe.bukkit.adapter.v16.r3.FAWEBukkitAdapter;
 import com.boydti.fawe.bukkit.adapter.v16.r3.BukkitGetBlocks;
 import com.boydti.fawe.bukkit.adapter.v16.r3.FAWEWorldNativeAccess;
 import com.boydti.fawe.bukkit.adapter.v16.r3.MapChunkUtilV16R3;
@@ -374,7 +374,7 @@ public final class FAWESpigotV16R3 extends CachedBukkitAdapter implements IDeleg
     @Override
     public void sendFakeChunk(org.bukkit.World world, Player player, ChunkPacket packet) {
         WorldServer nmsWorld = ((CraftWorld) world).getHandle();
-        PlayerChunk map = BukkitAdapter.getPlayerChunk(nmsWorld, packet.getChunkX(), packet.getChunkZ());
+        PlayerChunk map = FAWEBukkitAdapter.getPlayerChunk(nmsWorld, packet.getChunkX(), packet.getChunkZ());
         if (map != null && map.hasBeenLoaded()) {
             boolean flag = false;
             PlayerChunk.d players = map.players;

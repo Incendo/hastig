@@ -9,13 +9,11 @@ import org.jetbrains.annotations.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-
 public abstract class CharBlocks implements IBlocks {
 
     public static final Logger logger = LoggerFactory.getLogger(CharBlocks.class);
 
-    protected final Section FULL = new Section() {
+    public final Section FULL = new Section() {
         @Override
         public final char[] get(CharBlocks blocks, int layer) {
             return blocks.blocks[layer];
@@ -26,7 +24,7 @@ public abstract class CharBlocks implements IBlocks {
             return true;
         }
     };
-    protected final Section EMPTY = new Section() {
+    public final Section EMPTY = new Section() {
         @Override
         public final synchronized char[] get(CharBlocks blocks, int layer) {
             char[] arr = blocks.blocks[layer];
