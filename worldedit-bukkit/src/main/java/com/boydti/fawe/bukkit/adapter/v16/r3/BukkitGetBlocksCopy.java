@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
-public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGet {
+public class BukkitGetBlocksCopy implements IChunkGet {
 
     private final Map<BlockVector3, CompoundTag> tiles = new HashMap<>();
     private final Set<CompoundTag> entities = new HashSet<>();
@@ -163,7 +163,7 @@ public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGet {
     }
 
     @Override
-    public int getEmmittedLight(int x, int y, int z) {
+    public int getEmittedLight(int x, int y, int z) {
         return 0;
     }
 

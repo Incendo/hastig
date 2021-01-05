@@ -1,4 +1,6 @@
-package com.sk89q.jnbt;
+package com.sk89q.jnbt.fawe;
+
+import com.sk89q.jnbt.Tag;
 
 /**
  * A numerical {@link Tag}
