@@ -4,10 +4,11 @@ import com.boydti.fawe.Fawe;
 import com.boydti.fawe.FaweCache;
 import com.boydti.fawe.bukkit.adapter.DelegateLock;
 import com.boydti.fawe.bukkit.adapter.NMSAdapter;
+import com.boydti.fawe.bukkit.adapter.v16.r3.wrappers.ChunkSectionWrapper;
+import com.boydti.fawe.bukkit.adapter.v16.r3.wrappers.DataPaletteBlockWrapper;
 import com.boydti.fawe.config.Settings;
 import com.boydti.fawe.object.collection.BitArrayUnstretched;
 import com.boydti.fawe.util.MathMan;
-import com.boydti.fawe.util.ReflectionUtils;
 import com.boydti.fawe.util.TaskManager;
 import com.destroystokyo.paper.util.misc.PooledLinkedHashSets;
 import com.mojang.datafixers.util.Either;
@@ -16,8 +17,6 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypesCache;
 import io.papermc.lib.PaperLib;
 import net.jpountz.util.UnsafeUtils;
-import net.minecraft.server.v1_16_R3.BiomeBase;
-import net.minecraft.server.v1_16_R3.BiomeStorage;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.Chunk;
 import net.minecraft.server.v1_16_R3.ChunkCoordIntPair;
@@ -39,10 +38,6 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftChunk;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import sun.misc.Unsafe;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,67 +47,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 public final class FAWEBukkitAdapter extends NMSAdapter {
-    /*
-    NMS fields
-    */
-    public static final Field fieldBits;
-    public static final Field fieldPalette;
-    public static final Field fieldSize;
-
-    public static final Field fieldBitsPerEntry;
-
-    public static final Field fieldFluidCount;
-    public static final Field fieldTickingBlockCount;
-    public static final Field fieldNonEmptyBlockCount;
-
-    private static final Field fieldDirty;
-    private static final Field fieldDirtyBlocks;
-
-    private static final Field fieldBiomeArray;
-
-    private static final MethodHandle methodGetVisibleChunk;
 
     private static final int CHUNKSECTION_BASE;
     private static final int CHUNKSECTION_SHIFT;
 
-    private static final Field fieldLock;
-
     static {
         try {
-            fieldSize = DataPaletteBlock.class.getDeclaredField("i");
-            fieldSize.setAccessible(true);
-            fieldBits = DataPaletteBlock.class.getDeclaredField("a");
-            fieldBits.setAccessible(true);
-            fieldPalette = DataPaletteBlock.class.getDeclaredField("h");
-            fieldPalette.setAccessible(true);
-
-            fieldBitsPerEntry = DataBits.class.getDeclaredField("c");
-            fieldBitsPerEntry.setAccessible(true);
-
-            fieldFluidCount = ChunkSection.class.getDeclaredField("e");
-            fieldFluidCount.setAccessible(true);
-            fieldTickingBlockCount = ChunkSection.class.getDeclaredField("tickingBlockCount");
-            fieldTickingBlockCount.setAccessible(true);
-            fieldNonEmptyBlockCount = ChunkSection.class.getDeclaredField("nonEmptyBlockCount");
-            fieldNonEmptyBlockCount.setAccessible(true);
-
-            fieldDirty = PlayerChunk.class.getDeclaredField("p");
-            fieldDirty.setAccessible(true);
-            fieldDirtyBlocks = PlayerChunk.class.getDeclaredField("dirtyBlocks");
-            fieldDirtyBlocks.setAccessible(true);
-
-            fieldBiomeArray = BiomeStorage.class.getDeclaredField("h");
-            fieldBiomeArray.setAccessible(true);
-
-            Method declaredGetVisibleChunk = PlayerChunkMap.class.getDeclaredMethod("getVisibleChunk", long.class);
-            declaredGetVisibleChunk.setAccessible(true);
-            methodGetVisibleChunk = MethodHandles.lookup().unreflect(declaredGetVisibleChunk);
-
-            Field tmp = DataPaletteBlock.class.getDeclaredField("j");
-            ReflectionUtils.setAccessibleNonFinal(tmp);
-            fieldLock = tmp;
-            fieldLock.setAccessible(true);
-
             Unsafe unsafe = UnsafeUtils.getUNSAFE();
             CHUNKSECTION_BASE = unsafe.arrayBaseOffset(ChunkSection[].class);
             int scale = unsafe.arrayIndexScale(ChunkSection[].class);
@@ -145,20 +85,15 @@ public final class FAWEBukkitAdapter extends NMSAdapter {
 
     protected static DelegateLock applyLock(ChunkSection section) {
         //todo there has to be a better way to do this. Maybe using a() in DataPaletteBlock which acquires the lock in NMS?
-        try {
-            synchronized (section) {
-                DataPaletteBlock<IBlockData> blocks = section.getBlocks();
-                ReentrantLock currentLock = (ReentrantLock) fieldLock.get(blocks);
-                if (currentLock instanceof DelegateLock) {
-                    return (DelegateLock) currentLock;
-                }
-                DelegateLock newLock = new DelegateLock(currentLock);
-                fieldLock.set(blocks, newLock);
-                return newLock;
+        synchronized (section) {
+            DataPaletteBlock<IBlockData> blocks = section.getBlocks();
+            ReentrantLock currentLock = DataPaletteBlockWrapper.of(blocks).getLock();
+            if (currentLock instanceof DelegateLock) {
+                return (DelegateLock) currentLock;
             }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            DelegateLock newLock = new DelegateLock(currentLock);
+            DataPaletteBlockWrapper.of(blocks).setLock(newLock);
+            return newLock;
         }
     }
 
@@ -187,7 +122,7 @@ public final class FAWEBukkitAdapter extends NMSAdapter {
     public static PlayerChunk getPlayerChunk(WorldServer nmsWorld, final int chunkX, final int chunkZ) {
         PlayerChunkMap chunkMap = nmsWorld.getChunkProvider().playerChunkMap;
         try {
-            return (PlayerChunk) methodGetVisibleChunk.invoke(chunkMap, ChunkCoordIntPair.pair(chunkX, chunkZ));
+            return chunkMap.getVisibleChunk(ChunkCoordIntPair.pair(chunkX, chunkZ));
         } catch (Throwable thr) {
             throw new RuntimeException(thr);
         }
@@ -314,9 +249,10 @@ public final class FAWEBukkitAdapter extends NMSAdapter {
                 palette.a(ibd);
             }
             try {
-                fieldBits.set(dataPaletteBlocks, nmsBits);
-                fieldPalette.set(dataPaletteBlocks, palette);
-                fieldSize.set(dataPaletteBlocks, bitsPerEntry);
+                DataPaletteBlockWrapper.of(dataPaletteBlocks)
+                        .setBits(nmsBits)
+                        .setDataPalette(palette)
+                        .setSize(bitsPerEntry);
                 setCount(ticking_blocks.size(), 4096 - air, section);
                 if (!fastmode) {
                     ticking_blocks.forEach((pos, ordinal) -> section
@@ -339,17 +275,10 @@ public final class FAWEBukkitAdapter extends NMSAdapter {
     }
 
     public static void setCount(final int tickingBlockCount, final int nonEmptyBlockCount, final ChunkSection section) throws IllegalAccessException {
-        fieldFluidCount.setShort(section, (short) 0); // TODO FIXME
-        fieldTickingBlockCount.setShort(section, (short) tickingBlockCount);
-        fieldNonEmptyBlockCount.setShort(section, (short) nonEmptyBlockCount);
+        ChunkSectionWrapper.of(section)
+                .setFluidCount((short) 0) // TODO FIXME
+                .setTickingBlockCount((short) tickingBlockCount)
+                .setNonEmptyBlockCount((short) nonEmptyBlockCount);
     }
 
-    public static BiomeBase[] getBiomeArray(BiomeStorage storage) {
-        try {
-            return (BiomeBase[]) fieldBiomeArray.get(storage);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

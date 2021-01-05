@@ -314,7 +314,6 @@ public class AsyncBlock implements Block {
         return world.getBlock(x, y, z).getMaterial().isLiquid();
     }
 
-    /* TODO: Add these once Tuinity has been updated
     @Override
     public boolean isBuildable() {
         return this.getUnsafeBlock().isBuildable();
@@ -335,7 +334,6 @@ public class AsyncBlock implements Block {
     public boolean isSolid() {
         return this.getType().isSolid();
     }
-    */
 
     @Override
     public double getTemperature() {

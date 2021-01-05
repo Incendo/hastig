@@ -3,6 +3,7 @@ package com.boydti.fawe.bukkit.adapter.v16.r3;
 import com.boydti.fawe.FaweCache;
 import com.boydti.fawe.beta.IChunkGetCopy;
 import com.boydti.fawe.bukkit.adapter.v16.r3.nbt.LazyCompoundTag_1_16_4;
+import com.boydti.fawe.bukkit.adapter.v16.r3.wrappers.BiomeStorageWrapper;
 import com.google.common.base.Suppliers;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -89,7 +90,7 @@ public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGetCop
     }
 
     protected void storeBiomes(BiomeStorage biomeStorage) {
-        this.biomeStorage = new BiomeStorage(biomeStorage.g, FAWEBukkitAdapter.getBiomeArray(biomeStorage).clone());
+        this.biomeStorage = new BiomeStorage(biomeStorage.g, BiomeStorageWrapper.of(biomeStorage).getBiomeArray().clone());
     }
 
     @Override

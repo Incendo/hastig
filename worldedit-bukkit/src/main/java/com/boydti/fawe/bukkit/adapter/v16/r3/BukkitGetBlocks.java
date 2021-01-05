@@ -9,6 +9,9 @@ import com.boydti.fawe.beta.implementation.lighting.HeightMapType;
 import com.boydti.fawe.beta.implementation.queue.QueueHandler;
 import com.boydti.fawe.bukkit.adapter.DelegateLock;
 import com.boydti.fawe.bukkit.adapter.v16.r3.nbt.LazyCompoundTag_1_16_4;
+import com.boydti.fawe.bukkit.adapter.v16.r3.wrappers.ChunkSectionWrapper;
+import com.boydti.fawe.bukkit.adapter.v16.r3.wrappers.DataBitsWrapper;
+import com.boydti.fawe.bukkit.adapter.v16.r3.wrappers.DataPaletteBlockWrapper;
 import com.boydti.fawe.config.Settings;
 import com.boydti.fawe.object.collection.AdaptedMap;
 import com.boydti.fawe.object.collection.BitArrayUnstretched;
@@ -394,7 +397,8 @@ public class BukkitGetBlocks extends CharGetBlocks implements InputExtent.FAWEIn
                             }
                         }
                     }
-                    FAWEBukkitAdapter.fieldTickingBlockCount.set(existingSection, (short) 0);
+
+                    ChunkSectionWrapper.of(existingSection).setTickingBlockCount((short) 0);
 
                     //ensure that the server doesn't try to tick the chunksection while we're editing it.
                     DelegateLock lock = FAWEBukkitAdapter.applyLock(existingSection);
@@ -665,94 +669,91 @@ public class BukkitGetBlocks extends CharGetBlocks implements InputExtent.FAWEIn
             lock.untilFree();
             lock.setModified(false);
             // Efficiently convert ChunkSection to raw data
-            try {
-                FAWESpigotV16R3 adapter = ((FAWESpigotV16R3) WorldEditPlugin.getInstance().getBukkitImplAdapter());
+            FAWESpigotV16R3 adapter = ((FAWESpigotV16R3) WorldEditPlugin.getInstance().getBukkitImplAdapter());
 
-                final DataPaletteBlock<IBlockData> blocks = section.getBlocks();
-                final DataBits bits = (DataBits) FAWEBukkitAdapter.fieldBits.get(blocks);
-                final DataPalette<IBlockData> palette = (DataPalette<IBlockData>) FAWEBukkitAdapter.fieldPalette.get(blocks);
+            final DataPaletteBlock<IBlockData> blocks = section.getBlocks();
+            final DataPaletteBlockWrapper blocksWrapper = DataPaletteBlockWrapper.of(blocks);
 
-                final int bitsPerEntry = (int) FAWEBukkitAdapter.fieldBitsPerEntry.get(bits);
-                final long[] blockStates = bits.a();
+            final DataBits bits = blocksWrapper.getBits();
+            final DataPalette<IBlockData> palette = blocksWrapper.getDataPalette();
 
-                new BitArrayUnstretched(bitsPerEntry, 4096, blockStates).toRaw(data);
+            final int bitsPerEntry = DataBitsWrapper.of(bits).getBitsPerEntry();
+            final long[] blockStates = bits.a();
 
-                int num_palette;
-                if (palette instanceof DataPaletteLinear) {
-                    num_palette = ((DataPaletteLinear<IBlockData>) palette).b();
-                } else if (palette instanceof DataPaletteHash) {
-                    num_palette = ((DataPaletteHash<IBlockData>) palette).b();
-                } else {
-                    num_palette = 0;
-                    int[] paletteToBlockInts = FaweCache.IMP.PALETTE_TO_BLOCK.get();
-                    char[] paletteToBlockChars = FaweCache.IMP.PALETTE_TO_BLOCK_CHAR.get();
-                    try {
-                        for (int i = 0; i < 4096; i++) {
-                            char paletteVal = data[i];
-                            char ordinal = paletteToBlockChars[paletteVal];
-                            if (ordinal == Character.MAX_VALUE) {
-                                paletteToBlockInts[num_palette++] = paletteVal;
-                                IBlockData ibd = palette.a(data[i]);
-                                if (ibd == null) {
-                                    ordinal = BlockTypes.AIR.getDefaultState().getOrdinalChar();
-                                } else {
-                                    ordinal = adapter.adaptToChar(ibd);
-                                }
-                                paletteToBlockChars[paletteVal] = ordinal;
-                            }
-                            // Don't read "empty".
-                            if (ordinal == 0) {
-                                ordinal = 1;
-                            }
-                            data[i] = ordinal;
-                        }
-                    } finally {
-                        for (int i = 0; i < num_palette; i++) {
-                            int paletteVal = paletteToBlockInts[i];
-                            paletteToBlockChars[paletteVal] = Character.MAX_VALUE;
-                        }
-                    }
-                    return data;
-                }
+            new BitArrayUnstretched(bitsPerEntry, 4096, blockStates).toRaw(data);
 
-                char[] paletteToOrdinal = FaweCache.IMP.PALETTE_TO_BLOCK_CHAR.get();
+            int num_palette;
+            if (palette instanceof DataPaletteLinear) {
+                num_palette = ((DataPaletteLinear<IBlockData>) palette).b();
+            } else if (palette instanceof DataPaletteHash) {
+                num_palette = ((DataPaletteHash<IBlockData>) palette).b();
+            } else {
+                num_palette = 0;
+                int[] paletteToBlockInts = FaweCache.IMP.PALETTE_TO_BLOCK.get();
+                char[] paletteToBlockChars = FaweCache.IMP.PALETTE_TO_BLOCK_CHAR.get();
                 try {
-                    if (num_palette != 1) {
-                        for (int i = 0; i < num_palette; i++) {
-                            char ordinal = ordinal(palette.a(i), adapter);
-                            paletteToOrdinal[i] = ordinal;
-                        }
-                        for (int i = 0; i < 4096; i++) {
-                            char paletteVal = data[i];
-                            char val = paletteToOrdinal[paletteVal];
-                            if (val == Character.MAX_VALUE) {
-                                val = ordinal(palette.a(i), adapter);
-                                paletteToOrdinal[i] = val;
+                    for (int i = 0; i < 4096; i++) {
+                        char paletteVal = data[i];
+                        char ordinal = paletteToBlockChars[paletteVal];
+                        if (ordinal == Character.MAX_VALUE) {
+                            paletteToBlockInts[num_palette++] = paletteVal;
+                            IBlockData ibd = palette.a(data[i]);
+                            if (ibd == null) {
+                                ordinal = BlockTypes.AIR.getDefaultState().getOrdinalChar();
+                            } else {
+                                ordinal = adapter.adaptToChar(ibd);
                             }
-                            // Don't read "empty".
-                            if (val == 0) {
-                                val = 1;
-                            }
-                            data[i] = val;
+                            paletteToBlockChars[paletteVal] = ordinal;
                         }
-                    } else {
-                        char ordinal = ordinal(palette.a(0), adapter);
                         // Don't read "empty".
                         if (ordinal == 0) {
                             ordinal = 1;
                         }
-                        Arrays.fill(data, ordinal);
+                        data[i] = ordinal;
                     }
                 } finally {
                     for (int i = 0; i < num_palette; i++) {
-                        paletteToOrdinal[i] = Character.MAX_VALUE;
+                        int paletteVal = paletteToBlockInts[i];
+                        paletteToBlockChars[paletteVal] = Character.MAX_VALUE;
                     }
                 }
                 return data;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
             }
+
+            char[] paletteToOrdinal = FaweCache.IMP.PALETTE_TO_BLOCK_CHAR.get();
+            try {
+                if (num_palette != 1) {
+                    for (int i = 0; i < num_palette; i++) {
+                        char ordinal = ordinal(palette.a(i), adapter);
+                        paletteToOrdinal[i] = ordinal;
+                    }
+                    for (int i = 0; i < 4096; i++) {
+                        char paletteVal = data[i];
+                        char val = paletteToOrdinal[paletteVal];
+                        if (val == Character.MAX_VALUE) {
+                            val = ordinal(palette.a(i), adapter);
+                            paletteToOrdinal[i] = val;
+                        }
+                        // Don't read "empty".
+                        if (val == 0) {
+                            val = 1;
+                        }
+                        data[i] = val;
+                    }
+                } else {
+                    char ordinal = ordinal(palette.a(0), adapter);
+                    // Don't read "empty".
+                    if (ordinal == 0) {
+                        ordinal = 1;
+                    }
+                    Arrays.fill(data, ordinal);
+                }
+            } finally {
+                for (int i = 0; i < num_palette; i++) {
+                    paletteToOrdinal[i] = Character.MAX_VALUE;
+                }
+            }
+            return data;
         }
     }
 
@@ -836,28 +837,24 @@ public class BukkitGetBlocks extends CharGetBlocks implements InputExtent.FAWEIn
                     continue;
                 }
                 ChunkSection existing = getSections(true)[i];
-                try {
-                    final DataPaletteBlock<IBlockData> blocksExisting = existing.getBlocks();
+                final DataPaletteBlock<IBlockData> blocksExisting = existing.getBlocks();
 
-                    final DataPalette<IBlockData> palette = (DataPalette<IBlockData>) FAWEBukkitAdapter.fieldPalette.get(blocksExisting);
-                    int paletteSize;
+                final DataPalette<IBlockData> palette = DataPaletteBlockWrapper.of(blocksExisting).getDataPalette();
+                int paletteSize;
 
-                    if (palette instanceof DataPaletteLinear) {
-                        paletteSize = ((DataPaletteLinear<IBlockData>) palette).b();
-                    } else if (palette instanceof DataPaletteHash) {
-                        paletteSize = ((DataPaletteHash<IBlockData>) palette).b();
-                    } else {
-                        super.trim(false, i);
-                        continue;
-                    }
-                    if (paletteSize == 1) {
-                        //If the cached palette size is 1 then no blocks can have been changed i.e. do not need to update these chunks.
-                        continue;
-                    }
+                if (palette instanceof DataPaletteLinear) {
+                    paletteSize = ((DataPaletteLinear<IBlockData>) palette).b();
+                } else if (palette instanceof DataPaletteHash) {
+                    paletteSize = ((DataPaletteHash<IBlockData>) palette).b();
+                } else {
                     super.trim(false, i);
-                } catch (IllegalAccessException ignored) {
-                    super.trim(false, i);
+                    continue;
                 }
+                if (paletteSize == 1) {
+                    //If the cached palette size is 1 then no blocks can have been changed i.e. do not need to update these chunks.
+                    continue;
+                }
+                super.trim(false, i);
             }
             return true;
         }
