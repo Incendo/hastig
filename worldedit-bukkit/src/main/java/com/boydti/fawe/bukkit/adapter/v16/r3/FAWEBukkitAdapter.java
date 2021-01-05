@@ -248,19 +248,18 @@ public final class FAWEBukkitAdapter extends NMSAdapter {
                 final IBlockData ibd = ((BlockMaterial) state.getMaterial()).getState();
                 palette.a(ibd);
             }
-            try {
-                DataPaletteBlockWrapper.of(dataPaletteBlocks)
-                        .setBits(nmsBits)
-                        .setDataPalette(palette)
-                        .setSize(bitsPerEntry);
-                setCount(ticking_blocks.size(), 4096 - air, section);
-                if (!fastmode) {
-                    ticking_blocks.forEach((pos, ordinal) -> section
-                        .setType(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(),
-                            Block.getByCombinedId(ordinal)));
-                }
-            } catch (final IllegalAccessException e) {
-                throw new RuntimeException(e);
+            DataPaletteBlockWrapper.of(dataPaletteBlocks)
+                    .setBits(nmsBits)
+                    .setDataPalette(palette)
+                    .setSize(bitsPerEntry);
+            ChunkSectionWrapper.of(section)
+                    .setFluidCount((short) 0) // TODO FIXME
+                    .setTickingBlockCount((short) ticking_blocks.size())
+                    .setNonEmptyBlockCount((short) (4096 - air));
+            if (!fastmode) {
+                ticking_blocks.forEach((pos, ordinal) -> section
+                    .setType(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(),
+                        Block.getByCombinedId(ordinal)));
             }
 
             return section;
@@ -272,13 +271,6 @@ public final class FAWEBukkitAdapter extends NMSAdapter {
 
     private static ChunkSection newChunkSection(int layer) {
         return new ChunkSection(layer << 4);
-    }
-
-    public static void setCount(final int tickingBlockCount, final int nonEmptyBlockCount, final ChunkSection section) throws IllegalAccessException {
-        ChunkSectionWrapper.of(section)
-                .setFluidCount((short) 0) // TODO FIXME
-                .setTickingBlockCount((short) tickingBlockCount)
-                .setNonEmptyBlockCount((short) nonEmptyBlockCount);
     }
 
 }
