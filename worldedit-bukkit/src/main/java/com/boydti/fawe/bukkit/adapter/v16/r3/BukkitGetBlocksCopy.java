@@ -1,7 +1,10 @@
 package com.boydti.fawe.bukkit.adapter.v16.r3;
 
 import com.boydti.fawe.FaweCache;
-import com.boydti.fawe.beta.IChunkGetCopy;
+import com.boydti.fawe.beta.IBlocks;
+import com.boydti.fawe.beta.IChunkGet;
+import com.boydti.fawe.beta.IChunkSet;
+import com.boydti.fawe.beta.implementation.lighting.HeightMapType;
 import com.boydti.fawe.bukkit.adapter.v16.r3.nbt.LazyCompoundTag_1_16_4;
 import com.boydti.fawe.bukkit.adapter.v16.r3.wrappers.BiomeStorageWrapper;
 import com.google.common.base.Suppliers;
@@ -22,23 +25,25 @@ import net.minecraft.server.v1_16_R3.TileEntity;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import org.bukkit.craftbukkit.v1_16_R3.block.CraftBlock;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Future;
 
-public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGetCopy {
+public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGet {
 
     private final Map<BlockVector3, CompoundTag> tiles = new HashMap<>();
     private final Set<CompoundTag> entities = new HashSet<>();
     private BiomeStorage biomeStorage;
-    private final char[][] blocks = new char[16][4096];
-    private final char[][] newSetBlocks = new char[16][];
+    private final char[][] blocks = new char[16][];
+    private final WorldServer world;
 
-    protected BukkitGetBlocksCopy(WorldServer world, int X, int Z) {
-        super(world, X, Z);
+    protected BukkitGetBlocksCopy(WorldServer world) {
+        this.world = world;
     }
 
     protected void storeTile(TileEntity tile) {
@@ -89,6 +94,16 @@ public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGetCop
         return null;
     }
 
+    @Override
+    public void setCreateCopy(boolean createCopy) {
+
+    }
+
+    @Override
+    public boolean isCreateCopy() {
+        return false;
+    }
+
     protected void storeBiomes(BiomeStorage biomeStorage) {
         this.biomeStorage = new BiomeStorage(biomeStorage.g, BiomeStorageWrapper.of(biomeStorage).getBiomeArray().clone());
     }
@@ -107,8 +122,18 @@ public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGetCop
         return base != null ? com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(CraftBlock.biomeBaseToBiome(world.r().b(IRegistry.ay), base)) : null;
     }
 
-    protected void storeSection(int layer) {
-        blocks[layer] = load(layer).clone();
+    @Override
+    public boolean trim(boolean aggressive, int layer) {
+        return false;
+    }
+
+    @Override
+    public IBlocks reset() {
+        return null;
+    }
+
+    protected void storeSection(int layer, char[] data) {
+        blocks[layer] = data;
     }
 
     @Override
@@ -118,23 +143,49 @@ public class BukkitGetBlocksCopy extends BukkitGetBlocks implements IChunkGetCop
     }
 
     @Override
+    public boolean hasSection(@Range(from = 0, to = 15) int layer) {
+        return blocks[layer] != null;
+    }
+
+    @Override
+    public char[] load(int layer) {
+        return blocks[layer];
+    }
+
+    @Override
     public BlockState getBlock(int x, int y, int z) {
         return BlockTypesCache.states[get(x, y, z)];
     }
 
     @Override
+    public int getSkyLight(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public int getEmmittedLight(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public int[] getHeightMap(HeightMapType type) {
+        return new int[0];
+    }
+
+    @Override
+    public <T extends Future<T>> T call(IChunkSet set, Runnable finalize) {
+        return null;
+    }
+
     public char get(int x, int y, int z) {
         final int layer = y >> 4;
         final int index = (y & 15) << 8 | z << 4 | x;
         return blocks[layer][index];
     }
 
-    protected void storeSetBlocks(int layer, char[] blocks) {
-        newSetBlocks[layer] = blocks.clone();
-    }
 
     @Override
-    public char[] getNewSetArr(int layer) {
-        return newSetBlocks[layer];
+    public boolean trim(boolean aggressive) {
+        return false;
     }
 }

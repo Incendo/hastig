@@ -329,7 +329,7 @@ public class BukkitGetBlocks extends CharGetBlocks implements InputExtent.FAWEIn
     @Override
     public <T extends Future<T>> T call(IChunkSet set, Runnable finalizer) {
         forceLoadSections = false;
-        copy = createCopy ? new BukkitGetBlocksCopy(world, getChunkX(), getChunkZ()) : null;
+        copy = createCopy ? new BukkitGetBlocksCopy(world) : null;
         try {
             WorldServer nmsWorld = world;
             Chunk nmsChunk = ensureLoaded(nmsWorld, chunkX, chunkZ);
@@ -373,12 +373,9 @@ public class BukkitGetBlocks extends CharGetBlocks implements InputExtent.FAWEIn
 
                     bitMask |= 1 << layer;
 
-                    char[] setArr = set.load(layer);
-                    // If we're creating a copy, it's because we're delaying history so we do not want to write to
-                    // the chunkSet yet.
+                    char[] setArr = set.load(layer).clone();
                     if (createCopy) {
-                        copy.storeSection(layer);
-                        copy.storeSetBlocks(layer, setArr);
+                        copy.storeSection(layer, load(layer).clone());
                     }
 
                     ChunkSection newSection;
