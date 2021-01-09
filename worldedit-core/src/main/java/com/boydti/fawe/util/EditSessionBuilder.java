@@ -29,6 +29,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.regions.Region;
@@ -37,6 +38,8 @@ import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -45,6 +48,9 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class EditSessionBuilder {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDelegateExtent.class);
+
     @NotNull
     private World world;
     private Player player;
@@ -58,10 +64,10 @@ public class EditSessionBuilder {
     @NotNull
     private EventBus eventBus = WorldEdit.getInstance().getEventBus();
     private BlockBag blockBag;
-    private boolean threaded = true;
     private EditSessionEvent event;
     private String command;
     private RelightMode relightMode;
+    private Boolean wnaMode;
 
     /**
      * An EditSession builder<br>
@@ -198,6 +204,11 @@ public class EditSessionBuilder {
         return setDirty();
     }
 
+    public EditSessionBuilder forceWNA() {
+        this.wnaMode = true;
+        return setDirty();
+    }
+
     private EditSessionBuilder setDirty() {
         compiled = false;
         return this;
@@ -222,16 +233,19 @@ public class EditSessionBuilder {
                     return toReturn;
                 }
             }
-            if (Settings.IMP.EXTENT.DEBUG && event.getActor() != null) {
-                event.getActor().printDebug("Potentially unsafe extent blocked: " + toReturn.getClass().getName());
-                event.getActor().printDebug(" - For area restrictions, it is recommended to use the FaweAPI");
-                event.getActor().printDebug(" - For block logging, it is recommended to use BlocksHub");
-                event.getActor().printDebug(" - To allow this plugin add it to the FAWE `allowed-plugins` list");
-                event.getActor().printDebug(" - To hide this message set `debug` to false in the FAWE config.yml");
-                if (toReturn.getClass().getName().contains("CoreProtect")) {
-                    event.getActor().printDebug("Note on CoreProtect: ");
-                    event.getActor().printDebug(" - If you disable CP's WE logger (CP config) and this still shows, please update CP");
-                    event.getActor().printDebug(" - Use BlocksHub and set `debug` false in the FAWE config");
+            if (Settings.IMP.EXTENT.DEBUG) {
+                if (event.getActor() != null) {
+                    event.getActor().printDebug("Potentially unsafe extent blocked: " + toReturn.getClass().getName());
+                    event.getActor().printDebug(" - For area restrictions, it is recommended to use the FaweAPI");
+                    event.getActor().printDebug(" - For block logging, it is recommended to use BlocksHub");
+                    event.getActor().printDebug(" - To allow this plugin add it to the FAWE `allowed-plugins` list");
+                    event.getActor().printDebug(" - To hide this message set `debug` to false in the FAWE config.yml");
+                } else {
+                    logger.debug("Potentially unsafe extent blocked: " + toReturn.getClass().getName());
+                    logger.debug(" - For area restrictions, it is recommended to use the FaweAPI");
+                    logger.debug(" - For block logging, it is recommended to use BlocksHub");
+                    logger.debug(" - To allow this plugin add it to the FAWE `allowed-plugins` list");
+                    logger.debug(" - To hide this message set `debug` to false in the FAWE config.yml");
                 }
             }
         }
@@ -295,10 +309,11 @@ public class EditSessionBuilder {
             World unwrapped = WorldWrapper.unwrap(world);
             boolean placeChunks = this.fastmode || this.limit.FAST_PLACEMENT;
 
-            if (placeChunks) {
+            if (placeChunks && (wnaMode == null || !wnaMode)) {
+                wnaMode = false;
                 if (unwrapped instanceof IQueueExtent) {
                     extent = queue = (IQueueExtent) unwrapped;
-                } else if (Settings.IMP.QUEUE.PARALLEL_THREADS > 1 && threaded) {
+                } else if (Settings.IMP.QUEUE.PARALLEL_THREADS > 1 && !Fawe.isMainThread()) {
                     ParallelQueueExtent parallel = new ParallelQueueExtent(Fawe.get().getQueueHandler(), world, fastmode);
                     queue = parallel.getExtent();
                     extent = parallel;
@@ -306,6 +321,7 @@ public class EditSessionBuilder {
                     extent = queue = Fawe.get().getQueueHandler().getQueue(world);
                 }
             } else {
+                wnaMode = true;
                 extent = world;
             }
             Extent root = extent;
@@ -435,6 +451,10 @@ public class EditSessionBuilder {
 
     public BlockBag getBlockBag() {
         return blockBag;
+    }
+
+    public boolean isWNAMode() {
+        return wnaMode;
     }
 
 }

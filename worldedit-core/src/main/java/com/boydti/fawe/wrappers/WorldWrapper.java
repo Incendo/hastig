@@ -40,6 +40,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -321,6 +322,11 @@ public class WorldWrapper extends AbstractWorld {
     @Override
     public BiomeType getBiome(BlockVector3 position) {
         return parent.getBiome(position);
+    }
+
+    @Override
+    public void flush() {
+        parent.flush();
     }
 
     public class WorldWrapperFAWEOutputExtent implements FAWEOutputExtent {

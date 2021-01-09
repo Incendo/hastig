@@ -565,6 +565,13 @@ public class BukkitWorld extends AbstractWorld {
         WorldEditPlugin.getInstance().getBukkitImplAdapter().sendFakeChunk(getWorld(), bukkitPlayer, packet);
     }
 
+    @Override
+    public void flush() {
+        if (worldNativeAccess != null) {
+            worldNativeAccess.flush();
+        }
+    }
+
     public class BukkitWorldFAWEOutputExtent implements FAWEOutputExtent {
 
         @Override

@@ -50,6 +50,7 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -236,6 +237,10 @@ public class NullWorld extends AbstractWorld {
     @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         return false;
+    }
+
+    @Override
+    public void flush() {
     }
 
     public class NullWorldFAWEOutputExtent implements FAWEOutputExtent {
